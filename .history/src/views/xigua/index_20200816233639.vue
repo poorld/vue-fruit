@@ -23,9 +23,9 @@
     data() {
       return {
         url_list: [
-          'm.toutiaoimg.cn',
           'www.ixigua.com',
           'm.ixigua.com',
+          'm.toutiaoimg.cn',
         ],
         active: 0,
         activeName: 'first',
@@ -62,6 +62,8 @@
       isContains(url) {
         // ***使用forEach return无效
         /* this.url_list.forEach(function(value, index, arr){
+          console.log(url, value)
+          console.log(url.indexOf(value) >= 0)
           if(url.indexOf(value) >= 0)
             return true
           })
@@ -83,8 +85,10 @@
         })
         **/
 
-        return this.url_list.some(item => url.indexOf(item) >= 0) 
-
+        this.url_list.some(item => {
+          return url.indexOf(item) >= 0 // 当有数组有一项满足条件时结束并返回true
+        })
+        return false
       }
     }
   }

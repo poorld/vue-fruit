@@ -62,6 +62,8 @@
       isContains(url) {
         // ***使用forEach return无效
         /* this.url_list.forEach(function(value, index, arr){
+          console.log(url, value)
+          console.log(url.indexOf(value) >= 0)
           if(url.indexOf(value) >= 0)
             return true
           })
@@ -83,8 +85,15 @@
         })
         **/
 
-        return this.url_list.some(item => url.indexOf(item) >= 0) 
-
+        // 没用 无语
+        // this.url_list.some(item =>  url.indexOf(item) >= 0) 
+        console.log("m.toutiaoimg.cn".indexOf("m.toutiaoimg.cn"));
+        for (const item in this.url_list) {
+          console.log(url.indexOf(item) >= 0);
+          if (url.indexOf(item) >= 0)
+            return true
+        }
+        return false
       }
     }
   }

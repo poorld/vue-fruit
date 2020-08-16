@@ -62,6 +62,8 @@
       isContains(url) {
         // ***使用forEach return无效
         /* this.url_list.forEach(function(value, index, arr){
+          console.log(url, value)
+          console.log(url.indexOf(value) >= 0)
           if(url.indexOf(value) >= 0)
             return true
           })
