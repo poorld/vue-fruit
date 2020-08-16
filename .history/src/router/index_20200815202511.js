@@ -29,8 +29,6 @@ import Layout from '@/layout'
  * constantRoutes
  * a base page that does not have permission requirements
  * all roles can be accessed
- * 所有权限通用路由表 
- * 如首页和登录页和一些不用权限的公用页面
  */
 export const constantRoutes = [
   {
@@ -158,27 +156,6 @@ export const constantRoutes = [
       {
         path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
         meta: { title: 'External Link', icon: 'link' }
-      }
-    ]
-  },
-  {
-    path: '/xigua',
-    component: Layout,
-    redirect: '/xigua/link-analysis',
-    name: '西瓜视频',
-    meta: { title: '西瓜视频', icon: 'watermelon' },
-    children: [
-      {
-        path: 'link-analysis',
-        name: 'Link-analysis',
-        component: () => import('@/views/xigua/index'),
-        meta: { title: '链接解析', icon: 'link-analysis' }
-      },
-      {
-        path: 'video-list',
-        name: 'Video-list',
-        component: () => import('@/views/xigua/index'),
-        meta: { title: '视频列表', icon: 'video-list' }
       }
     ]
   },

@@ -1,4 +1,3 @@
-
 <template>
   <el-breadcrumb class="app-breadcrumb" separator="/">
     <transition-group name="breadcrumb">
@@ -53,6 +52,7 @@ export default {
       return toPath(params)
     },
     handleLink(item) {
+      console.log(item)
       const { redirect, path } = item
       if (redirect) {
         this.$router.push(redirect)

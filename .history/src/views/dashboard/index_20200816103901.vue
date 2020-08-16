@@ -1,4 +1,11 @@
-
+<!--
+ * @Author         : OutwitTheMilk
+ * @Date           : 2020-08-15 20:25:12
+ * @LastEditors    : OutwitTheMilk
+ * @LastEditTime   : 2020-08-16 10:39:01
+ * @FilePath       : \src\views\dashboard\index.vue
+ * @Description    : 
+-->
 <template>
   <div class="dashboard-container">
     <el-row :gutter="20">

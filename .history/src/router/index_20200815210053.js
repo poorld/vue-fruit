@@ -61,7 +61,7 @@ export const constantRoutes = [
     path: '/example',
     component: Layout,
     redirect: '/example/table',
-    name: 'Example',
+    name: '首页',
     meta: { title: 'Example', icon: 'el-icon-s-help' },
     children: [
       {
@@ -158,27 +158,6 @@ export const constantRoutes = [
       {
         path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
         meta: { title: 'External Link', icon: 'link' }
-      }
-    ]
-  },
-  {
-    path: '/xigua',
-    component: Layout,
-    redirect: '/xigua/link-analysis',
-    name: '西瓜视频',
-    meta: { title: '西瓜视频', icon: 'watermelon' },
-    children: [
-      {
-        path: 'link-analysis',
-        name: 'Link-analysis',
-        component: () => import('@/views/xigua/index'),
-        meta: { title: '链接解析', icon: 'link-analysis' }
-      },
-      {
-        path: 'video-list',
-        name: 'Video-list',
-        component: () => import('@/views/xigua/index'),
-        meta: { title: '视频列表', icon: 'video-list' }
       }
     ]
   },

@@ -1,3 +1,13 @@
+
+
+<!--
+ * @Author         : OutwitTheMilk
+ * @Date           : 2020-08-15 20:25:12
+ * @LastEditors    : OutwitTheMilk
+ * @LastEditTime   : 2020-08-16 10:55:10
+ * @FilePath       : \src\layout\components\Sidebar\SidebarItem.vue
+ * @Description    : 
+-->
 <template>
   <div v-if="!item.hidden">
     <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">

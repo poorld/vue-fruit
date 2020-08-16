@@ -1,4 +1,11 @@
-
+<!--
+ * @Author         : OutwitTheMilk
+ * @Date           : 2020-08-15 20:25:12
+ * @LastEditors    : OutwitTheMilk
+ * @LastEditTime   : 2020-08-16 10:35:35
+ * @FilePath       : \src\views\dashboard\index.vue
+ * @Description    : 
+-->
 <template>
   <div class="dashboard-container">
     <el-row :gutter="20">
@@ -21,15 +28,15 @@
       </el-col>
       <el-col :xs="{span:24}" :sm="{span:12}" :md="{span:8}">
         <div class="grid-content bg-purple-light">
-          <svg-icon icon-class="router" /><a href="#">openwrt</a></div>
+          <svg-icon icon-class="web-code" /><a href="#">openwrt</a></div>
       </el-col>
       <el-col :xs="{span:24}" :sm="{span:12}" :md="{span:8}">
         <div class="grid-content bg-purple">
-          <svg-icon icon-class="heartbeat" /><a href="#">未知</a></div>
+          <svg-icon icon-class="web-code" /><a href="#">portainer面板</a></div>
       </el-col>
       <el-col :xs="{span:24}" :sm="{span:12}" :md="{span:8}">
         <div class="grid-content bg-purple-light">
-          <svg-icon icon-class="heartbeat" /><a href="#">未知</a></div>
+          <svg-icon icon-class="web-code" /><a href="#">openwrt</a></div>
       </el-col>
     </el-row>
   </div>

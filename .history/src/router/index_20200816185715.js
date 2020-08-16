@@ -163,24 +163,9 @@ export const constantRoutes = [
   },
   {
     path: '/xigua',
-    component: Layout,
-    redirect: '/xigua/link-analysis',
-    name: '西瓜视频',
-    meta: { title: '西瓜视频', icon: 'watermelon' },
-    children: [
-      {
-        path: 'link-analysis',
-        name: 'Link-analysis',
-        component: () => import('@/views/xigua/index'),
-        meta: { title: '链接解析', icon: 'link-analysis' }
-      },
-      {
-        path: 'video-list',
-        name: 'Video-list',
-        component: () => import('@/views/xigua/index'),
-        meta: { title: '视频列表', icon: 'video-list' }
-      }
-    ]
+    name: 'Xigua',
+    component: () => import('@/views/tree/index'),
+    meta: { title: '西瓜视频', icon: 'tree' }
   },
 
   // 404 page must be placed at the end !!!

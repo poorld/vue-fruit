@@ -1,4 +1,15 @@
 
+
+<!--
+ * @Author: OutwitTheMilk
+ * @Date: 2020-08-15 20:25:12
+ * @LastEditors: OutwitTheMilk
+ * @LastEditTime: 2020-08-16 21:46:43
+ * @FilePath: \src\components\Breadcrumb\index.vue
+ * @Description: 
+-->
+
+
 <template>
   <el-breadcrumb class="app-breadcrumb" separator="/">
     <transition-group name="breadcrumb">
