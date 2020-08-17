@@ -15,15 +15,7 @@
       <el-form-item label="解析地址">
         <el-input v-model="form.analysis" type="textarea" :rows="5"/>
       </el-form-item>
-      
-      <el-form-item label="视频作者">
-        <el-input>
-          <template slot="prepend"><i class="el-icon-user-solid"></i></template>
-        </el-input>
-      </el-form-item>
     </el-form>
-
-    
   </div>
 </template>
 
@@ -46,8 +38,7 @@ export default {
       form: {
         url: '',
         analysis:''
-      },
-      author: ''
+      }
     }
   },
   methods: {

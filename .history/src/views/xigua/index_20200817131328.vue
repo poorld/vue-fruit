@@ -11,19 +11,7 @@
           <el-button @click="onCancel">清空</el-button>
         </el-col>
       </el-form-item>
-
-      <el-form-item label="解析地址">
-        <el-input v-model="form.analysis" type="textarea" :rows="5"/>
-      </el-form-item>
-      
-      <el-form-item label="视频作者">
-        <el-input>
-          <template slot="prepend"><i class="el-icon-user-solid"></i></template>
-        </el-input>
-      </el-form-item>
     </el-form>
-
-    
   </div>
 </template>
 
@@ -44,10 +32,8 @@ export default {
       active: 0,
       activeName: 'first',
       form: {
-        url: '',
-        analysis:''
-      },
-      author: ''
+        url: ''
+      }
     }
   },
   methods: {
@@ -61,16 +47,16 @@ export default {
       })
     },
     parsingurl(url) {
-      if (this.isContains(url)) {
+      if(this.isContains(url)) {
         this.$message('success!')
-        const data = {
+        let data = {
           'videolink': url
         }
         getVideo(data).then(resp => {
           console.log(resp)
-          this.form.analysis = resp.data
         })
-      } else {
+
+      }else{
         this.$message({
           message: '链接错误!',
           type: 'warning'
@@ -83,14 +69,17 @@ export default {
         if(url.indexOf(value) >= 0)
           return true
         })
-        console.log(false)
-        return false
-      }
+      console.log(false)
+      return false
+    } */
+
+    /*
       使用 Array.some()
       arr.some(item => {
-        console.log('b: ',item)
+        console.log('b: ',item) 
         return item === 2 // 当有数组有一项满足条件时结束并返回true
       })
+
       // 使用 Array.ervey()
       arr.every(item => {
         console.log('c: ',item)
@@ -98,11 +87,13 @@ export default {
       })
     */
 
-      return this.url_list.some(item => url.indexOf(item) >= 0)
+      return this.url_list.some(item => url.indexOf(item) >= 0) 
+
     }
   }
 }
 </script>
+
 
 <style lang="scss" scoped>
   .dashboard {

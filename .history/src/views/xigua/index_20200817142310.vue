@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form ref="form" :model="form" label-width="120px">
+    <el-fr ref="form" :model="form" label-width="120px">
       <el-form-item label="视频链接">
         <el-col :span="17">
           <el-input v-model="form.url" />
@@ -15,12 +15,14 @@
       <el-form-item label="解析地址">
         <el-input v-model="form.analysis" type="textarea" :rows="5"/>
       </el-form-item>
-      
-      <el-form-item label="视频作者">
-        <el-input>
-          <template slot="prepend"><i class="el-icon-user-solid"></i></template>
+
+      <el-form-item label="解析地址">
+        <el-input placeholder="请输入内容" v-model="input1">
+          <i class="el-icon-user-solid"></i>
+          <template slot="prepend">视频作者</template>
         </el-input>
       </el-form-item>
+
     </el-form>
 
     

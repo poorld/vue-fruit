@@ -16,9 +16,9 @@
         <el-input v-model="form.analysis" type="textarea" :rows="5"/>
       </el-form-item>
       
-      <el-form-item label="视频作者">
+      <el-form-item label="解析地址">
         <el-input>
-          <template slot="prepend"><i class="el-icon-user-solid"></i></template>
+          <template slot="prepend">视频作者</template>
         </el-input>
       </el-form-item>
     </el-form>

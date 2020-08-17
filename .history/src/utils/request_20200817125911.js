@@ -1,11 +1,3 @@
-/*
- * @Author: OutwitTheMilk
- * @Date: 2020-08-15 20:25:12
- * @LastEditors: OutwitTheMilk
- * @LastEditTime: 2020-08-17 13:00:38
- * @FilePath: \src\utils\request.js
- * @Description: 
- */
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
