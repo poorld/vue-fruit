@@ -4,7 +4,7 @@
     <el-form>
       <el-form-item label="用户链接/用户id">
         <el-col :sm="{span:24}" :lg="{span:18}">
-          <el-input />
+          <el-input v-model="userId"/>
         </el-col>
 
         <el-col :sm="{span:24}" :lg="{span:4}">
@@ -46,10 +46,8 @@
         <template slot-scope="scope">
           <!-- <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag> -->
           <el-switch
-            on-text ="是"
-            off-text = "否"
-            on-color="#5B7BFA"
-            off-color="#dadde5"
+            active-color="#5B7BFA"
+            inactive-color="#dadde5"
             v-model="scope.row.status"
             @change="change(scope.$index,scope.row)">
           </el-switch>
@@ -84,6 +82,23 @@
         :total="50">
       </el-pagination>
     </div>
+
+    <el-dialog
+      title="作者"
+      :visible.sync="centerDialogVisible"
+      width="30%"
+      center>
+      <div class="author-top">
+        <el-avatar :size="80" src="https://sf6-ttcdn-tos.pstatp.com/img/mosaic-legacy/fe4b00009f6e042e713e~120x256.image" />
+        <span>独孤轩辕策</span>
+      </div>
+      <el-divider></el-divider>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="centerDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="centerDialogVisible = false">订 阅</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -105,12 +120,37 @@ export default {
   data() {
     return {
       list: null,
-      listLoading: true
+      listLoading: true,
+      userId: '',
+      centerDialogVisible: false
     }
   },
   methods: {
     onSubmit() {
+      // 链接
+      // user_id=85383446500&
+      const pattern1 = /user_id=(\d+)&/
+      const match1 = this.userId.match(pattern1)
 
+      // 作者id
+      // 验证m-n位的数字：^\d{m,n}$
+      const pattern2 = /^\d{10,12}$/
+      const match2 = this.userId.match(pattern2)
+
+      let authorId
+
+      if (match1) {
+        authorId = match1[1]
+      } else if (match2) {
+        authorId = match2[0]
+      } else {
+        this.$message({
+          message: '输入错误',
+          type: 'warning'
+        })
+      }
+      console.log(authorId)
+      this.centerDialogVisible = true
     },
     fetchData() {
       this.listLoading = true
@@ -142,5 +182,15 @@ export default {
 .page {
   text-align: center;
   margin: 20px;
+}
+
+.author {
+  &-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: column;
+    height: 140px;
+  }
 }
 </style>
