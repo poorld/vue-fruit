@@ -2,28 +2,32 @@
   <div class="app-container">
     <el-form ref="form" :model="form" label-width="120px">
       <el-form-item label="视频链接">
-        <el-col :span="17">
+        <el-col :sm="{span:24}" :lg="{span:18}">
           <el-input v-model="form.url" />
         </el-col>
-        <el-col :span="1" class="line">-</el-col>
-        <el-col :span="4">
+        <el-col :sm="{span:24}" :lg="{span:4}">
           <el-button type="primary" @click="onSubmit">解析</el-button>
           <el-button @click="onCancel">清空</el-button>
         </el-col>
       </el-form-item>
 
       <el-form-item label="解析地址">
-        <el-input v-model="form.analysis" type="textarea" :rows="5"/>
+        <el-input v-model="form.analysis" type="textarea" :rows="5" />
       </el-form-item>
-      
+
       <el-form-item label="视频作者">
-        <el-input>
-          <template slot="prepend"><i class="el-icon-user-solid"></i></template>
+        <el-input v-model="media_name" disabled>
+          <template slot="prepend"><i class="el-icon-user-solid" /></template>
+        </el-input>
+      </el-form-item>
+
+      <el-form-item label="视频标题">
+        <el-input v-model="title" disabled>
+          <template slot="prepend"><i class="el-icon-postcard"></i></template>
         </el-input>
       </el-form-item>
     </el-form>
 
-    
   </div>
 </template>
 
@@ -45,9 +49,10 @@ export default {
       activeName: 'first',
       form: {
         url: '',
-        analysis:''
+        analysis: ''
       },
-      author: ''
+      media_name: '',
+      title: ''
     }
   },
   methods: {
@@ -67,8 +72,10 @@ export default {
           'videolink': url
         }
         getVideo(data).then(resp => {
-          console.log(resp)
-          this.form.analysis = resp.data
+          // console.log(resp)
+          this.form.analysis = resp.data.videoAddr
+          this.media_name = resp.data.media_name
+          this.title = resp.data.title
         })
       } else {
         this.$message({

@@ -6,9 +6,9 @@ const table = require('./table')
 const subscription = require('./subscription')
 
 const mocks = [
-  ...subscription,
   ...user,
-  ...table
+  ...table,
+  ...subscription
 ]
 
 // for front mock

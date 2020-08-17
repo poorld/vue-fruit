@@ -176,7 +176,7 @@ export const constantRoutes = [
       },
       {
         path: 'subscription-list',
-        name: 'Subscription',
+        name: 'Subscription-list',
         component: () => import('@/views/xigua/subscription/index'),
         meta: { title: '订阅列表', icon: 'video-list' }
       },

@@ -29,7 +29,7 @@ import Layout from '@/layout'
  * constantRoutes
  * a base page that does not have permission requirements
  * all roles can be accessed
- * 所有权限通用路由表
+ * 所有权限通用路由表 
  * 如首页和登录页和一些不用权限的公用页面
  */
 export const constantRoutes = [
@@ -171,20 +171,20 @@ export const constantRoutes = [
       {
         path: 'link-analysis',
         name: 'Link-analysis',
-        component: () => import('@/views/xigua/analysis/index'),
+        component: () => import('@/views/xigua/index'),
         meta: { title: '链接解析', icon: 'link-analysis' }
       },
       {
-        path: 'subscription-list',
-        name: 'Subscription',
-        component: () => import('@/views/xigua/subscription/index'),
+        path: 'video-list',
+        name: 'Video-list',
+        component: () => import('@/views/xigua/index'),
         meta: { title: '订阅列表', icon: 'video-list' }
       },
       {
         path: 'video-list',
         name: 'Video-list',
-        component: () => import('@/views/xigua/analysis/index'),
-        meta: { title: '推送列表', icon: 'push' }
+        component: () => import('@/views/xigua/index'),
+        meta: { title: '推送列表', icon: 'video-list' }
       }
     ]
   },
