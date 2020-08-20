@@ -1,7 +1,7 @@
-import request from '@/utils/request'
+import {mockService, apiService} from '@/utils/request'
 
 export function getList(params) {
-  return request({
+  return mockService({
     url: '/vue-admin-template/table/list',
     method: 'get',
     params

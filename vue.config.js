@@ -14,6 +14,8 @@ const name = defaultSettings.title || 'vue Admin Template' // page title
 // You can change the port by the following methods:
 // port = 9528 npm run dev OR npm run dev --port = 9528
 const port = process.env.port || process.env.npm_config_port || 9528 // dev port
+const py_port = process.env.VUE_APP_BASE_API_PYTHON_PORT
+const server_port = process.env.VUE_APP_BASE_API_SERVER_PORT
 
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
@@ -36,25 +38,71 @@ module.exports = {
       warnings: false,
       errors: true
     },
-    /* proxy: {
+    // 跨域与MOCK共存
+    proxy: {
       // change xxx-api/login => mock/login
       // detail: https://cli.vuejs.org/config/#devserver-proxy
-      [process.env.VUE_APP_BASE_API]: {
-      // http://127.0.0.1:9527/api 指向真实服务器路径
-      // target: http://127.0.0.1:${port}/mock,
-        target: 'http://127.0.0.1:9527/api',
+      // 配置前缀 '/dev-api'
+
+      // change xxx-api/login => mock/login
+      // detail: https://cli.vuejs.org/config/#devserver-proxy
+      // MOCK
+      [process.env.VUE_APP_BASE_API_MOCK]: {
+        target: `http://localhost:${port}/mock`,
         changeOrigin: true,
         pathRewrite: {
-          ['^' + process.env.VUE_APP_BASE_API]: ''
+          ['^' + process.env.VUE_APP_BASE_API_MOCK]: ''
         }
-      }
-    }, */
+      },
+
+      // PYTHON 视频链接解析
+      [process.env.VUE_APP_BASE_API_PYTHON]: {
+        target: `http://127.0.0.1:9527/api`,
+        changeOrigin: true,
+        secure: false,
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_API_PYTHON]: ''
+        }
+      },
+
+      // SpringBoot 后台
+      // [process.env.VUE_APP_BASE_API_SERVER]: {
+      //   target: `http://localhost:${server_port}/mock`,
+      //   changeOrigin: true,
+      //   pathRewrite: {
+      //     ['^' + process.env.VUE_APP_BASE_API_SERVER]: ''
+      //   }
+      // },
+
+      // 西瓜视频
+      [process.env.VUE_APP_BASE_API_XIGUA]: {
+        target: `https://m.ixigua.com`,
+        changeOrigin: true,
+        secure: false,
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_API_XIGUA]: ''
+        }
+      },
+
+      // '/api': {
+      //   target: `http://localhost:9527/`,
+      //   changeOrigin: true,
+      //   secure: false,
+      //   pathRewrite: {
+      //     '^/api': '/api'
+      //   }
+      // },
+    },
+
+    // https://wappass.baidu.com/
     before: require('./mock/mock-server.js')
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
     // it can be accessed in index.html to inject the correct title.
     name: name,
+    // 调试
+    devtool: 'source-map',
     resolve: {
       alias: {
         '@': resolve('src')

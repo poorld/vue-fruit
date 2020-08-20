@@ -1,25 +1,33 @@
-/*
- * @Author: OutwitTheMilk
- * @Date: 2020-08-15 20:25:12
- * @LastEditors: OutwitTheMilk
- * @LastEditTime: 2020-08-17 13:00:38
- * @FilePath: \src\utils\request.js
- * @Description: 
- */
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 
+// 获取当前服务器环境下的地址
+let mes = window.location;
+let _baseurl = `//${mes.hostname}:${mes.port}`;
+
 // create an axios instance
-const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
+// MOCK使用的
+const mockService = axios.create({
+  baseURL: process.env.VUE_APP_BASE_API_MOCK, // url = base url + request url
+  // baseURL: _baseurl,
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 5000 // request timeout
 })
+
+// 跨域请求使用的
+const apiService = axios.create({
+  // baseURL: process.env.VUE_APP_BASE_API_XIGUA, // url = base url + request url
+  baseURL: _baseurl,
+  // baseURL: process.env.VUE_APP_BASE_API_PYTHON,
+  // withCredentials: true, // send cookies when cross-domain requests
+  timeout: 5000 // request timeout
+})
+
 axios.defaults.withCredentials = true; //配置为true
 // request interceptor
-service.interceptors.request.use(
+mockService.interceptors.request.use(
   config => {
     // do something before request is sent
 
@@ -39,7 +47,7 @@ service.interceptors.request.use(
 )
 
 // response interceptor
-service.interceptors.response.use(
+mockService.interceptors.response.use(
   /**
    * If you want to get http information such as headers or status
    * Please return  response => response
@@ -90,4 +98,5 @@ service.interceptors.response.use(
   }
 )
 
-export default service
+
+export {mockService, apiService} 

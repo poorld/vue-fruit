@@ -4,7 +4,7 @@
     <el-form>
       <el-form-item label="用户链接/用户id">
         <el-col :sm="{span:24}" :lg="{span:18}">
-          <el-input v-model="userId"/>
+          <el-input v-model="userId" />
         </el-col>
 
         <el-col :sm="{span:24}" :lg="{span:4}">
@@ -37,26 +37,33 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="Pageviews" align="center">
+      <el-table-column label="简介" align="center" width="400">
         <template slot-scope="scope">
-          {{ scope.row.pageviews }}
+          {{ scope.row.description }}
         </template>
       </el-table-column>
+
+      <el-table-column align="center" label="认证信息" width="400">
+        <template slot-scope="scope">
+          <span>{{ scope.row.verified_content }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" prop="created_at" label="发布时间" width="200">
+        <template slot-scope="scope">
+          <i class="el-icon-time" />
+          <span>{{ scope.row.display_time }}</span>
+        </template>
+      </el-table-column>
+
       <el-table-column class-name="status-col" label="订阅" align="center" width="100">
         <template slot-scope="scope">
           <!-- <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag> -->
           <el-switch
+            v-model="scope.row.status"
             active-color="#5B7BFA"
             inactive-color="#dadde5"
-            v-model="scope.row.status"
-            @change="change(scope.$index,scope.row)">
-          </el-switch>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="created_at" label="Display_time" width="200">
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span>{{ scope.row.display_time }}</span>
+            @change="change(scope.$index,scope.row)" />
         </template>
       </el-table-column>
 
@@ -79,8 +86,7 @@
       <el-pagination
         small
         layout="prev, pager, next"
-        :total="50">
-      </el-pagination>
+        :total="50" />
     </div>
 
     <el-dialog
@@ -90,20 +96,39 @@
       center>
       <div class="author-top">
         <el-avatar :size="80" src="https://sf6-ttcdn-tos.pstatp.com/img/mosaic-legacy/fe4b00009f6e042e713e~120x256.image" />
-        <span>独孤轩辕策</span>
+        <!-- <el-avatar :size="20" :src="authLevel(authorInfo.user_auth_info)" v-if="authorInfo.user_verified" /> -->
+        <el-avatar class="level" :size="20" :src="authLevel(1)" />
+        <span style="color: #1d1d1d;font-weight: 500;font-size: 16px;">独孤轩辕策</span>
       </div>
-      <el-divider></el-divider>
+      <!-- 分割线 -->
+      <el-divider />
+
+      <div class="auth-bottom">
+        <div class="left">
+          <span>
+            <svg-icon icon-class="identity-authentication" style="font-size: 30px;"/>
+             用户ID: 4123531254123
+          </span>
+        </div>
+
+        <div class="right">
+          <span>
+            <svg-icon icon-class="description" style="font-size: 30px;"/>
+            世界未知面，新的观点古老的故事。
+          </span>
+        </div>
+      </div>
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="centerDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="centerDialogVisible = false">订 阅</el-button>
+        <el-button type="primary" @click="follow">关 注</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getList } from '@/api/subscription'
+import { getList, sb } from '@/api/subscription'
 
 export default {
   name: 'Subscription',
@@ -122,9 +147,16 @@ export default {
       list: null,
       listLoading: true,
       userId: '',
-      centerDialogVisible: false
+      centerDialogVisible: false,
+      authorInfo: {}
     }
   },
+
+  // 生命周期 - 创建完成（访问当前this实例）
+  created() {
+    this.fetchData()
+  },
+
   methods: {
     onSubmit() {
       // 链接
@@ -134,8 +166,13 @@ export default {
 
       // 作者id
       // 验证m-n位的数字：^\d{m,n}$
-      const pattern2 = /^\d{10,12}$/
+      const pattern2 = /^\d{10,16}$/
       const match2 = this.userId.match(pattern2)
+
+      sb().then(res => {
+        console.log(res.data)
+        // this.centerDialogVisible = true
+      })
 
       let authorId
 
@@ -148,10 +185,14 @@ export default {
           message: '输入错误',
           type: 'warning'
         })
+        return
       }
       console.log(authorId)
-      this.centerDialogVisible = true
+      const url = 'https://m.toutiaoimg.cn/group/6861266415723217412/?app=news_article&timestamp=1597591092&group_id=6861266415723217412&use_new_style=1&tt_from=mobile_qq&utm_source=mobile_qq&utm_medium=toutiao_android&utm_campaign=client_share'
+      
+
     },
+
     fetchData() {
       this.listLoading = true
       getList().then(response => {
@@ -159,13 +200,23 @@ export default {
         this.listLoading = false
       })
     },
+
     change(index, row) {
       console.log(index, row)
+    },
+
+    authLevel(level) {
+      const thumb = {
+        '0': require('@/assets/subscription_images/v0.png'),
+        '1': require('@/assets/subscription_images/v1.png')
+      }
+      return thumb[level]
+    },
+
+    follow() {
+      this.$message('关注成功!')
+      this.centerDialogVisible = false
     }
-  },
-  // 生命周期 - 创建完成（访问当前this实例）
-  created() {
-    this.fetchData()
   }
 }
 </script>
@@ -191,6 +242,27 @@ export default {
     justify-content: space-around;
     flex-direction: column;
     height: 140px;
+  }
+}
+
+.level {
+  margin-top: -38px;
+  margin-right: -60px;
+}
+
+.auth-bottom {
+  display: flex;
+  span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+  .left {
+    flex: 1;
+  }
+
+  .right {
+    flex: 1;
   }
 }
 </style>

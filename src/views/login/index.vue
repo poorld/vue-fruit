@@ -54,7 +54,7 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
-
+import { getList, sb, xigua } from '@/api/subscription'
 export default {
   name: 'Login',
   data() {
@@ -120,6 +120,15 @@ export default {
           return false
         }
       })
+      const url = 'https://m.toutiaoimg.cn/group/6861266415723217412/?app=news_article&timestamp=1597591092&group_id=6861266415723217412&use_new_style=1&tt_from=mobile_qq&utm_source=mobile_qq&utm_medium=toutiao_android&utm_campaign=client_share'
+      sb().then(res => {
+        console.log(res.data)
+        // this.centerDialogVisible = true
+      })
+
+      // xigua().then(res => {
+      //   console.log(res.data)
+      // })
     }
   }
 }
