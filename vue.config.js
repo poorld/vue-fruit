@@ -66,13 +66,13 @@ module.exports = {
       },
 
       // SpringBoot 后台
-      // [process.env.VUE_APP_BASE_API_SERVER]: {
-      //   target: `http://localhost:${server_port}/mock`,
-      //   changeOrigin: true,
-      //   pathRewrite: {
-      //     ['^' + process.env.VUE_APP_BASE_API_SERVER]: ''
-      //   }
-      // },
+      [process.env.VUE_APP_BASE_API_SERVER]: {
+        target: `http://localhost:${server_port}`,
+        changeOrigin: true,
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_API_SERVER]: '/' + process.env.VUE_APP_BASE_API_SERVER
+        }
+      },
 
       // 西瓜视频
       [process.env.VUE_APP_BASE_API_XIGUA]: {

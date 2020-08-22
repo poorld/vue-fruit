@@ -1,4 +1,4 @@
-import {mockService, apiService} from '@/utils/request'
+import { mockService, apiService } from '@/utils/request'
 
 export function getList(params) {
   return mockService({
@@ -10,21 +10,36 @@ export function getList(params) {
 
 export function sb() {
   return apiService({
-    url: process.env.VUE_APP_BASE_API_PYTHON + '/api/outwit',
+    url: process.env.VUE_APP_BASE_API_PYTHON + '/outwit',
     method: 'post',
     data: {
-      "videolink": "gg"
+      'videolink': 'gg'
     },
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     }
   })
-} 
+}
 
 export function xigua(data) {
   return apiService({
     url: process.env.VUE_APP_BASE_API_XIGUA + '/video/app/user/home/?to_user_id=4076588298929316&format=json&source=pgc_author_name&list_entrance=shortvideo&max_behot_time=',
     method: 'get',
+    data
+  })
+}
+
+export function getBook(){
+  return apiService({
+    url: process.env.VUE_APP_BASE_API_SERVER + '/book/book',
+    method: 'get'
+  })
+}
+
+export function updateBook(data){
+  return apiService({
+    url: process.env.VUE_APP_BASE_API_SERVER + '/book/book',
+    method: 'put',
     data
   })
 }

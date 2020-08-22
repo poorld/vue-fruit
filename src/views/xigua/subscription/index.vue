@@ -128,7 +128,7 @@
 </template>
 
 <script>
-import { getList, sb } from '@/api/subscription'
+import { getList, getBook, updateBook } from '@/api/subscription'
 
 export default {
   name: 'Subscription',
@@ -169,9 +169,14 @@ export default {
       const pattern2 = /^\d{10,16}$/
       const match2 = this.userId.match(pattern2)
 
-      sb().then(res => {
-        console.log(res.data)
-        // this.centerDialogVisible = true
+      getBook().then(res => {
+        console.log(res)
+      })
+
+      updateBook({
+        book_name: 'teenyda'
+      }).then(res => {
+        console.log(res)
       })
 
       let authorId
@@ -188,9 +193,6 @@ export default {
         return
       }
       console.log(authorId)
-      const url = 'https://m.toutiaoimg.cn/group/6861266415723217412/?app=news_article&timestamp=1597591092&group_id=6861266415723217412&use_new_style=1&tt_from=mobile_qq&utm_source=mobile_qq&utm_medium=toutiao_android&utm_campaign=client_share'
-      
-
     },
 
     fetchData() {
