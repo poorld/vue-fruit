@@ -1,5 +1,21 @@
 <template>
   <div class="app-container">
+
+    <div class="product-menu">
+      <el-row>
+        <el-button type="primary" size="small">添加产品</el-button>
+
+        <el-input placeholder="请输入内容" v-model="input" class="input-with-select" size="small">
+          <el-select v-model="select" slot="prepend" placeholder="分类" class="classify">
+            <el-option label="餐厅名" value="1"></el-option>
+            <el-option label="订单号" value="2"></el-option>
+            <el-option label="用户电话" value="3"></el-option>
+          </el-select>
+          <el-button slot="append" icon="el-icon-search"></el-button>
+        </el-input>
+      </el-row>
+    </div>
+
     <el-table
       v-loading="listLoading"
       :data="list"
@@ -60,7 +76,9 @@ export default {
   data() {
     return {
       list: null,
-      listLoading: true
+      listLoading: true,
+      input: '',
+      select: ''
     }
   },
   created() {
@@ -77,3 +95,22 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  .product-menu {
+    margin-bottom: 10px;
+  }
+
+  .classify {
+    width: 100px;
+  }
+
+  .input-with-select {
+    background-color: #fff;
+    width: 400px;
+    float: right;
+  }
+  /* .el-input {
+    width: 430px;
+  } */
+</style>

@@ -61,14 +61,14 @@ export const constantRoutes = [
     path: '/example',
     component: Layout,
     redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help' },
+    name: '商品管理',
+    meta: { title: '商品管理', icon: 'el-icon-s-help' },
     children: [
       {
         path: 'table',
-        name: 'Table',
+        name: '商品',
         component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        meta: { title: '商品', icon: 'table' }
       },
       {
         path: 'tree',
