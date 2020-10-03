@@ -20,31 +20,80 @@
       v-loading="listLoading"
       :data="list"
       element-loading-text="Loading"
-      border
       fit
       highlight-current-row
     >
-      <el-table-column align="center" label="ID" width="95">
+
+       <el-table-column type="expand">
+        <template slot-scope="">
+          <el-form label-position="left" inline class="demo-table-expand">
+
+            <el-form-item label="商品 ID">
+              <span>123455</span>
+            </el-form-item>
+            <el-form-item label="商品名称">
+              <span>陕西优质红提葡萄</span>
+            </el-form-item>
+            <el-form-item label="商品分类">
+              <el-tag type="info" size="small">葡萄</el-tag>
+            </el-form-item>
+
+            <el-form-item label="商品价格">
+              <span>15.7</span>
+            </el-form-item>
+            <el-form-item label="库存">
+              <span>59（斤）</span>
+            </el-form-item>
+
+            <!-- <el-form-item label="封面">
+              <el-image
+                style="width: 100px; height: 100px"
+                :src="url"
+                fit="fill"></el-image>
+            </el-form-item> -->
+
+            <el-form-item label="是否推荐">
+              <el-tag type="success" size="small"><span>true</span></el-tag>
+            </el-form-item>
+
+            <el-form-item label="水果优惠">
+              <span>满30-2元</span>
+            </el-form-item>
+
+            <el-form-item label="创建时间">
+              <span>2009-01-30 12:02:52</span>
+            </el-form-item>
+
+            <el-image
+              style="width: 100px;height: 100px;float: right;margin-top: -110px;"
+              :src="url"
+              fit="full"></el-image>
+
+          </el-form>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="商品ID" width="110">
         <template slot-scope="scope">
           {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column label="Title">
+      <!-- <el-table-column label="Title" width="110">
         <template slot-scope="scope">
           {{ scope.row.title }}
         </template>
-      </el-table-column>
-      <el-table-column label="Author" width="110" align="center">
+      </el-table-column> -->
+      <el-table-column label="商品名称" width="110" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.author }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Pageviews" width="110" align="center">
+      <el-table-column label="描述"  align="center">
         <template slot-scope="scope">
           {{ scope.row.pageviews }}
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" label="Status" width="110" align="center">
+      <el-table-column class-name="status-col" label="状态" width="110" align="center">
         <template slot-scope="scope">
           <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
         </template>
@@ -55,6 +104,19 @@
           <span>{{ scope.row.display_time }}</span>
         </template>
       </el-table-column>
+
+
+      <el-table-column label="操作" width="150">
+      <template slot-scope="scope">
+        <el-button
+          size="mini"
+          @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+        <el-button
+          size="mini"
+          type="danger"
+          @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+      </template>
+    </el-table-column>
     </el-table>
   </div>
 </template>
@@ -78,7 +140,9 @@ export default {
       list: null,
       listLoading: true,
       input: '',
-      select: ''
+      select: '',
+      url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
+
     }
   },
   created() {
@@ -113,4 +177,17 @@ export default {
   /* .el-input {
     width: 430px;
   } */
+
+  .demo-table-expand {
+    font-size: 0;
+  }
+  .demo-table-expand label {
+    width: 90px;
+    color: #99a9bf;
+  }
+  .demo-table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+  }
 </style>

@@ -71,10 +71,16 @@ export const constantRoutes = [
         meta: { title: '商品', icon: 'table' }
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        path: 'category',
+        name: '分类',
+        component: () => import('@/views/category/index'),
+        meta: { title: '分类', icon: 'tree' }
+      },
+      {
+        path: 'banner',
+        name: '轮播图',
+        component: () => import('@/views/banner/index'),
+        meta: { title: '轮播图', icon: 'tree' }
       }
     ]
   },
