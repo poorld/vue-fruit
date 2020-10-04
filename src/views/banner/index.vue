@@ -20,7 +20,32 @@
 
       </div>
 
+      <div class="banner-info">
+        <span>幻灯片{{bannerIndex + 1}}</span>
+        <span>商品ID{{ productId }}</span>
+        <span>商品名称{{ productName }}</span>
+      </div>
+
+      <div class="edit">
+        <el-button type="primary" icon="el-icon-edit" circle @click="bannerEdit"></el-button>
+        <el-button type="warning" icon="el-icon-plus" circle @click="bannerAdd"></el-button>
+        <el-button type="danger" icon="el-icon-delete" circle @click="bannerDelete"></el-button>
+      </div>
+
     </div>
+
+    <el-dialog
+      :title="title"
+      :visible.sync="dialogVisible"
+      width="30%"
+      :before-close="handleClose">
+      <span>这是一段信息</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -29,22 +54,46 @@ export default {
   data() {
     return {
       bannerList: ['无幻灯片，请添加', '无幻灯片，请添加', '无幻灯片，请添加'],
-      bannerCount: 5
+      bannerCount: 5,
+      bannerIndex: 0,
+      productId: 0,
+      productName: '',
+      dialogVisible: false,
+      title: ''
     }
   },
 
   methods: {
     onChange(index) {
       console.log(index)
+      this.bannerIndex = index
+      let banner = this.bannerList[index]
+      if (banner && banner.productId) {
+        this.productId = banner.productId
+        this.productName = banner.productName
+      } else {
+        this.productId = ''
+        this.productName = ''
+      }
     },
 
     ajaxGetBanner() {
       return [
         {
+          productId: 12345,
+          productName: '新疆葡萄价格美丽',
           image: 'https://img.zcool.cn/community/013de756fb63036ac7257948747896.jpg'
         }
       ]
-    }
+    },
+
+    handleClose(done) {
+        this.$confirm('确认关闭？')
+          .then(_ => {
+            done();
+          })
+          .catch(_ => {});
+      }
 
   },
   created() {
@@ -56,6 +105,12 @@ export default {
         banners.push('无幻灯片，请添加')
       }
       this.bannerList = banners
+
+      let banner = this.bannerList[0]
+      if (banner && banner.productId) {
+        this.productId = banner.productId
+        this.productName = banner.productName
+      }
     },
 }
 </script>
@@ -80,5 +135,18 @@ export default {
 
   .el-carousel__item:nth-child(2n+1) {
      background-color: #d3dce6;
+  }
+  .banner-info {
+    color: #8c8c8c;
+    size: 15px;
+    margin-top: 10px;
+  }
+
+  .banner-info span {
+    margin-left: 20px;
+  }
+
+  .edit {
+    text-align: center;
   }
 </style>
