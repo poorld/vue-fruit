@@ -1,18 +1,20 @@
 <template>
   <div class="app-container">
     <div class="block">
-        <!-- <span class="demonstration">Click 指示器触发</span> -->
+      <!-- <span class="demonstration">Click 指示器触发</span> -->
       <el-carousel trigger="click" height="300px" @change="onChange">
         <el-carousel-item v-for="(item,index) in bannerList" :key="index">
-          <h3 class="small">{{ item }}</h3>
+          <h3 class="small" v-if="!item.image">{{ item }}</h3>
+          <el-image v-if="item.image" :src="item.image"></el-image>
         </el-carousel-item>
       </el-carousel>
 
       <div class="edit">
-
         <el-alert
-          title="推荐 900 x 383 px"
+          title="商城首页轮播图"
           type="success"
+          show-icon
+          description="推荐数量：5张 格式推荐： 900 x 383px"
           :closable="false">
         </el-alert>
 
@@ -26,18 +28,37 @@
 export default {
   data() {
     return {
-      bannerList: ['无幻灯片，请添加','无幻灯片，请添加','无幻灯片，请添加']
+      bannerList: ['无幻灯片，请添加', '无幻灯片，请添加', '无幻灯片，请添加'],
+      bannerCount: 5
     }
   },
 
   methods: {
-    onChange(index){
+    onChange(index) {
       console.log(index)
+    },
+
+    ajaxGetBanner() {
+      return [
+        {
+          image: 'https://img.zcool.cn/community/013de756fb63036ac7257948747896.jpg'
+        }
+      ]
     }
-  }
+
+  },
+  created() {
+      let banners = this.ajaxGetBanner()
+      let length = this.bannerCount - banners.length;
+      // 幻灯片数量不足用文字代替图片
+      console.log(length)
+      for(let i = 0; i < length; i++) {
+        banners.push('无幻灯片，请添加')
+      }
+      this.bannerList = banners
+    },
 }
 </script>
-
 
 <style scoped>
   .block {
