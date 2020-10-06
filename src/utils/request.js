@@ -41,7 +41,7 @@ const apiService = axios.create({
 })
 
 /**
- * 水果后台
+ * 水果后台服务
  * 打死也不想用proxy了
  */
 const apiFruitService = axios.create({
@@ -220,5 +220,9 @@ apiFruitService.interceptors.response.use(
   }
 )
 
-
-export {mockService, apiService, apiFruitService}
+/**
+ * mockService mock模拟数据服务
+ * apiService 跨域请求服务 先请求本项目地址_baseurl，再通过proxy代理
+ * apiFruitService 水果后台服务
+ */
+export { mockService, apiService, apiFruitService }

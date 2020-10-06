@@ -19,9 +19,7 @@ export function addBook(data) {
   })
 }
 
-export function upload(data, headers) {
-  let formData = new FormData();
-  formData.set("file", fileObj.file);
+export function uploadImage(data) {
   return apiFruitService({
     url: '/file/upload',
     method: 'post',

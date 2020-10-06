@@ -55,22 +55,25 @@
       :visible.sync="uploadVisible"
       width="30%">
       <div>
+        <!-- :http-request="uploadImg" -->
         <el-upload
           class="upload-demo"
-          action
+          action="http://localhost:9000/api/app/file/upload"
           name="file"
           :on-preview="handlePreview"
           :on-remove="handleRemove"
           :file-list="fileList"
-          :http-request="uploadImg"
+
+          :on-success="handleAvatarSuccess"
+          :before-upload="beforeAvatarUpload"
           list-type="picture">
           <el-button size="small" type="primary">点击上传</el-button>
           <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
         </el-upload>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button>取 消</el-button>
-        <el-button type="primary">确 定</el-button>
+        <!-- <el-button>取 消</el-button> -->
+        <el-button type="primary" @click="uploadVisible = false">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -78,7 +81,7 @@
 </template>
 
 <script>
-import { getBook, addBook } from '@/api/banner'
+// import { getBook, addBook, uploadImage } from '@/api/banner'
 
 export default {
   data() {
@@ -122,22 +125,46 @@ export default {
       this.uploadVisible = true
     },
 
-    uploadImg(fileObj) {
-      let formData = new FormData();
-      formData.set("file", fileObj.file);
-      // axios
-      //   .post('接口地址', formData, {
-      //     headers: {
-      //       "Content-type": "multipart/form-data"
-      //     }
-      //   }).then().catch();
-    },
+    // 手动上传（也可以）
+    // uploadImg(fileObj) {
+    //   let formData = new FormData();
+    //   formData.set("file", fileObj.file);
+    //   console.log(fileObj.file);
+    //   uploadImage(formData)
+    //     .then(res => {
+    //       console.log(res)
+    //     })
+    //     .catch()
+
+    //   // axios
+    //   //   .post('接口地址', formData, {
+    //   //     headers: {
+    //   //       "Content-type": "multipart/form-data"
+    //   //     }
+    //   //   }).then().catch();
+    // },
 
     handleRemove(file, fileList) {
-      console.log(file, fileList);
+      console.log(file, fileList)
     },
     handlePreview(file) {
-      console.log(file);
+      console.log(file)
+    },
+
+    handleAvatarSuccess(res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw)
+    },
+    beforeAvatarUpload(file) {
+      const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPGorPNG) {
+        this.$message.error('上传头像图片只能是 JPG 或 PNG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!')
+      }
+      return isJPGorPNG && isLt2M
     },
 
     ajaxGetBanner() {
@@ -162,7 +189,7 @@ export default {
     const banners = this.ajaxGetBanner()
     const length = this.bannerCount - banners.length
     // 幻灯片数量不足用文字代替图片
-    console.log(length)
+    // console.log(length)
     for (let i = 0; i < length; i++) {
       banners.push('无幻灯片，请添加')
     }
@@ -179,11 +206,10 @@ export default {
     //     console.log(res)
     //   })
 
-
-    addBook({'bookName': 'sbsbs'})
-      .then(res => {
-        console.log(res)
-      })
+    // addBook({'bookName': 'sbsbs'})
+    //   .then(res => {
+    //     console.log(res)
+    //   })
   }
 
 }
