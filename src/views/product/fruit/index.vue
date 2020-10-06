@@ -24,14 +24,14 @@
       highlight-current-row>
 
       <el-table-column type="expand">
-        <template slot-scope="">
+        <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand">
 
             <el-form-item label="商品 ID">
-              <span>123455</span>
+              <span>{{ props.row.id }}</span>
             </el-form-item>
             <el-form-item label="商品名称">
-              <span>陕西优质红提葡萄</span>
+              <span>{{ props.row.author }}</span>
             </el-form-item>
             <el-form-item label="商品分类">
               <el-tag type="info" size="small">葡萄</el-tag>
@@ -63,10 +63,10 @@
               <span>2009-01-30 12:02:52</span>
             </el-form-item>
 
-            <el-image
+            <!-- <el-image
               style="width: 100px;height: 100px;float: right;margin-top: -110px;"
               :src="url"
-              fit="full"></el-image>
+              fit="full"></el-image> -->
 
           </el-form>
 
@@ -90,11 +90,12 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="商品ID" width="110">
-        <template slot-scope="scope">
-          {{ scope.$index }}
-        </template>
+      <el-table-column
+        width="110"
+        label="商品 ID"
+        prop="id">
       </el-table-column>
+
       <!-- <el-table-column label="Title" width="110">
         <template slot-scope="scope">
           {{ scope.row.title }}
@@ -106,11 +107,19 @@
           <el-avatar shape="square" :size="100" fit="fill" :src="scope.row.img"></el-avatar>
         </template>
       </el-table-column>
-      <el-table-column label="商品名称" width="110" align="center">
+
+      <el-table-column
+        width="110"
+        label="商品名称"
+        prop="author"
+        align="center">
+      </el-table-column>
+      <!-- <el-table-column label="商品名称" width="110" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.author }}</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
+
       <el-table-column label="描述"  align="center">
         <template slot-scope="scope">
           {{ scope.row.pageviews }}
@@ -123,7 +132,7 @@
       </el-table-column>
       <el-table-column align="center" prop="created_at" label="Display_time" width="200">
         <template slot-scope="scope">
-          <i class="el-icon-time" />
+          <svg-icon icon-class="fruit_price" />
           <span>{{ scope.row.display_time }}</span>
         </template>
       </el-table-column>
@@ -215,7 +224,7 @@ export default {
   }
 
   .fruit-setting {
-    text-align: right;
+    text-align: left;
     margin: 15px 0;
   }
 </style>
