@@ -42,7 +42,7 @@
       <div style="text-align: center;margin-top: 40px;">
         <el-button type="primary" @click="uploadClick">上传<i class="el-icon-upload el-icon--right"></i></el-button>
 
-        <el-button type="primary">外链<i class="el-icon-link el-icon--right"></i></el-button>
+        <el-button type="primary" @click="linkVisible = true; dialogVisible = false">外链<i class="el-icon-link el-icon--right"></i></el-button>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
@@ -50,6 +50,7 @@
       </span>
     </el-dialog>
 
+    <!-- 上传窗口 -->
     <el-dialog
       title="提示"
       :visible.sync="uploadVisible"
@@ -63,7 +64,6 @@
           :on-preview="handlePreview"
           :on-remove="handleRemove"
           :file-list="fileList"
-
           :on-success="handleAvatarSuccess"
           :before-upload="beforeAvatarUpload"
           list-type="picture">
@@ -74,6 +74,34 @@
       <span slot="footer" class="dialog-footer">
         <!-- <el-button>取 消</el-button> -->
         <el-button type="primary" @click="uploadVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 外链添加窗口 -->
+    <el-dialog
+      title="提示"
+      :visible.sync="linkVisible"
+      width="30%">
+      <div>
+        <el-input
+          type="textarea"
+          :rows="2"
+          placeholder="请输入外链"
+          v-model="textarea">
+        </el-input>
+      </div>
+      <div style="margin-top: 15px">
+        <span class="demonstration">预览</span>
+        <el-image :src="textarea" @load="loadSuccess" @error="loadError">
+          <div slot="error" class="image-slot">
+            <i class="el-icon-picture-outline"></i>
+          </div>
+        </el-image>
+      </div>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="linkVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addBannerFromLink">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -93,7 +121,10 @@ export default {
       productName: '',
       dialogVisible: false,
       uploadVisible: false,
+      linkVisible: false,
       title: '',
+      textarea: '',
+      bannerImageFlag: false,
       fileList: []
     }
   },
@@ -183,6 +214,25 @@ export default {
           done()
         })
         .catch(_ => {})
+    },
+
+    loadSuccess(e) {
+      console.info('图片加载成功', this.textarea)
+      this.bannerImageFlag = true
+    },
+
+    loadError(e) {
+      console.error('图片加载失败', this.textarea)
+      this.bannerImageFlag = false
+    },
+
+    addBannerFromLink() {
+      if (this.bannerImageFlag) {
+        // api
+
+      } else {
+        this.$message.error('图像加载失败，请重试!')
+      }
     }
   },
   created() {

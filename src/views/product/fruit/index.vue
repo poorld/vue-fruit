@@ -21,10 +21,9 @@
       :data="list"
       element-loading-text="Loading"
       fit
-      highlight-current-row
-    >
+      highlight-current-row>
 
-       <el-table-column type="expand">
+      <el-table-column type="expand">
         <template slot-scope="">
           <el-form label-position="left" inline class="demo-table-expand">
 
@@ -70,6 +69,24 @@
               fit="full"></el-image>
 
           </el-form>
+
+          <el-row class="fruit-setting">
+            <el-button type="info" size="small">
+              <svg-icon icon-class="fruit_hot" />设为热销水果
+            </el-button>
+
+            <el-button type="primary" size="small">
+              <svg-icon icon-class="fruit_limit" />设为限时抢购
+            </el-button>
+
+            <el-button type="success" size="small">
+              <svg-icon icon-class="fruit_choiceness" />设为每日精选
+            </el-button>
+
+            <el-button type="warning" size="small">
+              <svg-icon icon-class="fruit_choiceness" />关联幻灯片
+            </el-button>
+          </el-row>
         </template>
       </el-table-column>
 
@@ -83,6 +100,12 @@
           {{ scope.row.title }}
         </template>
       </el-table-column> -->
+      <el-table-column label="商品封面" width="110" align="center">
+        <template slot-scope="scope">
+          <!-- <span>{{ scope.row.img }}</span> -->
+          <el-avatar shape="square" :size="100" fit="fill" :src="scope.row.img"></el-avatar>
+        </template>
+      </el-table-column>
       <el-table-column label="商品名称" width="110" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.author }}</span>
@@ -189,5 +212,10 @@ export default {
     margin-right: 0;
     margin-bottom: 0;
     width: 50%;
+  }
+
+  .fruit-setting {
+    text-align: right;
+    margin: 15px 0;
   }
 </style>
