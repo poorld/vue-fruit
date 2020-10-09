@@ -1,20 +1,34 @@
 <template>
   <div class="app-container">
 
-    <div class="product-menu">
-      <el-row>
-        <el-button type="primary" size="small">添加产品</el-button>
+    <div class="menu">
 
-        <el-input placeholder="请输入内容" v-model="input" class="input-with-select" size="small">
-          <el-select v-model="select" slot="prepend" placeholder="分类" class="classify">
-            <el-option label="餐厅名" value="1"></el-option>
-            <el-option label="订单号" value="2"></el-option>
-            <el-option label="用户电话" value="3"></el-option>
-          </el-select>
-          <el-button slot="append" icon="el-icon-search"></el-button>
-        </el-input>
-      </el-row>
+      <div style="margin-bottom: 20px">
+        <el-button type="primary" size="small">添加产品</el-button>
+      </div>
+
+      <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+        <div style="margin: 15px 0;"></div>
+        <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
+          <el-checkbox v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox>
+        </el-checkbox-group>
+
+      <div class="product-menu">
+        <el-row>
+
+          <el-input placeholder="请输入内容" v-model="input" class="input-with-select" size="small">
+            <el-select v-model="select" slot="prepend" placeholder="非必选" class="classify">
+              <el-option label="已上线" value="1"></el-option>
+              <el-option label="已下线" value="2"></el-option>
+              <el-option label="精选水果" value="3"></el-option>
+            </el-select>
+            <el-button slot="append" icon="el-icon-search"></el-button>
+          </el-input>
+        </el-row>
+      </div>
     </div>
+
+
 
     <el-table
       v-loading="listLoading"
@@ -25,6 +39,15 @@
 
       <el-table-column type="expand">
         <template slot-scope="props">
+
+          <div class="status">
+            <el-tag>新品上市</el-tag>
+            <el-tag type="success">热销水果</el-tag>
+            <!-- <el-tag type="info">标签三</el-tag> -->
+            <el-tag type="warning">限时抢购</el-tag>
+            <el-tag type="danger">每日精选</el-tag>
+          </div>
+
           <el-form label-position="left" inline class="demo-table-expand">
 
             <el-form-item label="商品 ID">
@@ -86,6 +109,10 @@
             <el-button type="warning" size="small">
               <svg-icon icon-class="fruit_choiceness" />关联幻灯片
             </el-button>
+
+            <el-button type="danger" size="small" style="float: right;">
+              查看详情
+            </el-button>
           </el-row>
         </template>
       </el-table-column>
@@ -131,7 +158,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" prop="created_at" label="Display_time" width="200">
+      <el-table-column align="center" prop="created_at" label="价格" width="200">
         <template slot-scope="scope">
           <svg-icon icon-class="fruit_price" />
           <span>{{ scope.row.price }}</span>
@@ -150,11 +177,19 @@
       </template>
     </el-table-column>
     </el-table>
+
+    <el-pagination
+      style="text-align: center;margin: 50px;"
+      background
+      layout="prev, pager, next"
+      :total="1000">
+    </el-pagination>
   </div>
 </template>
 
 <script>
 import { getList } from '@/api/table'
+const cityOptions = ['上海1', '北京2', '广州3', '深圳4','上海5', '北京6', '广州7', '深圳8']
 
 export default {
   filters: {
@@ -173,7 +208,11 @@ export default {
       listLoading: true,
       input: '',
       select: '',
-      url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
+      url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+      checkAll: false,
+      checkedCities: ['上海', '北京'],
+      cities: cityOptions,
+      isIndeterminate: true
 
     }
   },
@@ -187,15 +226,31 @@ export default {
         this.list = response.data.items
         this.listLoading = false
       })
+    },
+
+    handleCheckAllChange(val) {
+      this.checkedCities = val ? cityOptions : [];
+      this.isIndeterminate = false;
+    },
+    handleCheckedCitiesChange(value) {
+      let checkedCount = value.length;
+      this.checkAll = checkedCount === this.cities.length;
+      this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length;
     }
   }
 }
 </script>
 
 <style scoped>
-  .product-menu {
+  .app-container {
+    background: #eee;
+  }
+  .menu {
+    background: #fff;
+    padding: 20px;
     margin-bottom: 10px;
   }
+
 
   .classify {
     width: 100px;
@@ -203,8 +258,8 @@ export default {
 
   .input-with-select {
     background-color: #fff;
-    width: 400px;
-    float: right;
+    width: 500px;
+    margin: 20px 0;
   }
   /* .el-input {
     width: 430px;
