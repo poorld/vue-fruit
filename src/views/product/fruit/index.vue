@@ -38,7 +38,7 @@
             </el-form-item>
 
             <el-form-item label="商品价格">
-              <span>15.7</span>
+              <span>{{ props.row.price }}</span>
             </el-form-item>
             <el-form-item label="库存">
               <span>59（斤）</span>
@@ -56,7 +56,7 @@
             </el-form-item>
 
             <el-form-item label="水果优惠">
-              <span>满30-2元</span>
+              <span style="color: #ff0d0d;">满30-2元</span>
             </el-form-item>
 
             <el-form-item label="创建时间">
@@ -130,13 +130,13 @@
           <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
         </template>
       </el-table-column>
+
       <el-table-column align="center" prop="created_at" label="Display_time" width="200">
         <template slot-scope="scope">
           <svg-icon icon-class="fruit_price" />
-          <span>{{ scope.row.display_time }}</span>
+          <span>{{ scope.row.price }}</span>
         </template>
       </el-table-column>
-
 
       <el-table-column label="操作" width="150">
       <template slot-scope="scope">
