@@ -4,7 +4,7 @@
     <div class="menu">
 
       <div style="margin-bottom: 20px">
-        <el-button type="primary" size="small">添加产品</el-button>
+        <el-button type="primary" size="small" @click="addProduct">添加产品</el-button>
       </div>
 
       <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
@@ -15,7 +15,6 @@
 
       <div class="product-menu">
         <el-row>
-
           <el-input placeholder="请输入内容" v-model="input" class="input-with-select" size="small">
             <el-select v-model="select" slot="prepend" placeholder="非必选" class="classify">
               <el-option label="已上线" value="1"></el-option>
@@ -94,23 +93,23 @@
           </el-form>
 
           <el-row class="fruit-setting">
-            <el-button type="info" size="small">
+            <el-button type="info" size="mini">
               <svg-icon icon-class="fruit_hot" />设为热销水果
             </el-button>
 
-            <el-button type="primary" size="small">
+            <el-button type="primary" size="mini">
               <svg-icon icon-class="fruit_limit" />设为限时抢购
             </el-button>
 
-            <el-button type="success" size="small">
+            <el-button type="success" size="mini">
               <svg-icon icon-class="fruit_choiceness" />设为每日精选
             </el-button>
 
-            <el-button type="warning" size="small">
+            <el-button type="warning" size="mini">
               <svg-icon icon-class="fruit_choiceness" />关联幻灯片
             </el-button>
 
-            <el-button type="danger" size="small" style="float: right;">
+            <el-button type="danger" size="mini" style="float: right;">
               查看详情
             </el-button>
           </el-row>
@@ -236,6 +235,10 @@ export default {
       let checkedCount = value.length;
       this.checkAll = checkedCount === this.cities.length;
       this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length;
+    },
+
+    addProduct() {
+      this.$router.push('/product/addProduct')
     }
   }
 }

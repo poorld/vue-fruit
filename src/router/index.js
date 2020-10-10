@@ -58,9 +58,9 @@ export const constantRoutes = [
   },
 
   {
-    path: '/example',
+    path: '/product',
     component: Layout,
-    redirect: '/example/table',
+    redirect: '/product/table',
     name: '商品管理',
     meta: { title: '商品管理', icon: 'el-icon-s-help' },
     children: [
@@ -81,6 +81,13 @@ export const constantRoutes = [
         name: '轮播图',
         component: () => import('@/views/product/banner/index'),
         meta: { title: '轮播图', icon: 'tree' }
+      },
+      {
+        path: 'addProduct',
+        name: '添加商品',
+        component: () => import('@/views/product/addProduct/index'),
+        meta: { title: '添加商品', icon: 'tree' },
+        hidden: true
       }
     ]
   },
