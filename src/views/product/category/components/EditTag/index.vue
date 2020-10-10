@@ -55,9 +55,9 @@ export default {
       //   })
     },
     removeTag(item, index) {
-      confirm('提示', '确定要删除吗?')
+      confirm('提示', `确定要删除分类[${item.name}]吗?`)
         .then(() => {
-          this.$emit('onDeleteTag', item)
+          this.$emit('onDeleteTag', item, index)
         })
         .catch(() => {
           info('取消删除')

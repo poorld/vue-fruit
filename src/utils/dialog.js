@@ -1,7 +1,6 @@
-import { reject, resolve } from "core-js/fn/promise"
+// import { reject, resolve } from "core-js/fn/promise"
 import { MessageBox } from 'element-ui'
 import { Message } from 'element-ui'
-
 
 export function confirm(title, content) {
   return MessageBox.confirm(content, title, {
@@ -38,5 +37,4 @@ export function dialogInput(title, content, val) {
   //     message: '取消输入'
   //   });
   // })
-
 }

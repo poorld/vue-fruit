@@ -25,3 +25,12 @@ export function updateCategory(data) {
   })
 }
 
+export function deleteCategory(data) {
+  return apiFruitService({
+    url: '/fruit/category',
+    method: 'delete',
+    data
+  })
+}
+
+

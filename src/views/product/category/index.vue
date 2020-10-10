@@ -15,7 +15,6 @@
       <span style="font-size: 13px;color: #8c8c8c;">分类数：{{dynamicTags.length}}</span>
     </div>
 
-
     <edit-tag :tagList="dynamicTags" @onEditTag="onEditTag" @onDeleteTag="onDeleteTag" @onInsertTag="onInsertTag">
     </edit-tag>
 
@@ -24,7 +23,8 @@
 
 <script>
 import EditTag from './components/EditTag/index.vue'
-import {getCategory, addCategory, updateCategory} from '@/api/category'
+import { getCategory, addCategory, updateCategory, deleteCategory } from '@/api/category'
+
 export default {
   data() {
     return {
@@ -36,35 +36,38 @@ export default {
   },
 
   methods: {
+    // 编辑
     onEditTag(item, value, index) {
       console.log(item, value)
       if (value) {
         item.name = value
         updateCategory(item)
           .then(res => {
-             this.dynamicTags.splice(index, 1, res.data)
+            this.dynamicTags.splice(index, 1, res.data)
           })
       }
-
     },
 
-    onDeleteTag(item) {
+    // 删除
+    onDeleteTag(item, index) {
       console.log(item)
+      deleteCategory(item)
+        .then(res => {
+          this.dynamicTags.splice(index, 1)
+        })
     },
 
+    // 添加
     onInsertTag(value) {
       console.log('onInsertTag', value)
-      addCategory({'name': value})
+      addCategory({ 'name': value } )
         .then(res => {
           this.dynamicTags.push(res.data)
         })
-
-
     }
-
   },
 
-  created(){
+  created() {
     getCategory()
       .then(res => {
         this.dynamicTags = res.data
@@ -75,9 +78,7 @@ export default {
     EditTag
   }
 }
-
 </script>
-
 
 <style scoped>
 .el-tag + .el-tag {
