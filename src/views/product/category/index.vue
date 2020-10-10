@@ -15,71 +15,60 @@
       <span style="font-size: 13px;color: #8c8c8c;">分类数：{{dynamicTags.length}}</span>
     </div>
 
-    <!-- <el-tag
-      :key="tag"
-      v-for="tag in dynamicTags"
-      closable
-      :disable-transitions="false"
-      @close="handleClose(tag)"
-    >
-      {{tag}}
-    </el-tag>
 
-    <el-input
-      class="input-new-tag"
-      v-model="inputValue"
-      ref="saveTagInput"
-      size="small"
-      @keyup.enter.native="handleInputConfirm"
-      @blur="handleInputConfirm"
-    >
-    </el-input>
-    <el-button class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button> -->
-
-    <!-- <span class="el-tag el-tag--light">
-      标签三
-      <i class="el-icon-edit el-tag__edit"></i>
-      <i class="el-tag__close el-icon-close"></i>
-    </span> -->
-
-    <edit-tag :tagList="dynamicTags"></edit-tag>
-
+    <edit-tag :tagList="dynamicTags" @onEditTag="onEditTag" @onDeleteTag="onDeleteTag" @onInsertTag="onInsertTag">
+    </edit-tag>
 
   </div>
 </template>
 
 <script>
-import EditTag from '@/components/EditTag/index.vue'
+import EditTag from './components/EditTag/index.vue'
+import {getCategory, addCategory, updateCategory} from '@/api/category'
 export default {
   data() {
     return {
-      filterText: "",
-      dynamicTags: ["标签一", "标签二", "标签三"],
+      filterText: '',
+      dynamicTags: ['标签一', '标签二', '标签三'],
       inputVisible: false,
-      inputValue: "",
-    };
+      inputValue: ''
+    }
   },
 
   methods: {
-    handleClose(tag) {
-      this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
-    },
-
-    showInput() {
-      this.inputVisible = true;
-      this.$nextTick((_) => {
-        this.$refs.saveTagInput.$refs.input.focus();
-      });
-    },
-
-    handleInputConfirm() {
-      let inputValue = this.inputValue;
-      if (inputValue) {
-        this.dynamicTags.push(inputValue);
+    onEditTag(item, value, index) {
+      console.log(item, value)
+      if (value) {
+        item.name = value
+        updateCategory(item)
+          .then(res => {
+             this.dynamicTags.splice(index, 1, res.data)
+          })
       }
-      this.inputVisible = false;
-      this.inputValue = "";
+
+    },
+
+    onDeleteTag(item) {
+      console.log(item)
+    },
+
+    onInsertTag(value) {
+      console.log('onInsertTag', value)
+      addCategory({'name': value})
+        .then(res => {
+          this.dynamicTags.push(res.data)
+        })
+
+
     }
+
+  },
+
+  created(){
+    getCategory()
+      .then(res => {
+        this.dynamicTags = res.data
+      })
   },
 
   components: {

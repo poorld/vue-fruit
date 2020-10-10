@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div v-for="item in tagList" :key="item" style="display: inline-block;">
+    <div v-for="(item, index) in  tagList" :key="index" style="display: inline-block;margin-right: 10px;">
       <span class="el-tag el-tag--light">
-        {{ item }}
-        <i class="el-icon-edit el-tag__edit" v-on:click="editTag(item)"></i>
-        <i class="el-tag__close el-icon-close" v-on:click="removeTag(item)"></i>
+        {{ item.name }}
+        <i class="el-icon-edit el-tag__edit" v-on:click="editTag(item, index)"></i>
+        <i class="el-tag__close el-icon-close" v-on:click="removeTag(item, index)"></i>
       </span>
     </div>
 
@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import {confirm, success, info, dialogInput} from '@/utils/dialog'
+
 export default {
   props: {
     tagList: Array,
@@ -34,11 +36,32 @@ export default {
     }
   },
   methods: {
-    editTag(item) {
-      console.log(item)
+    editTag(item, index) {
+
+      dialogInput('提示', '编辑标签', item.name)
+        .then(({ value }) => {
+          this.$emit('onEditTag', item, value, index)
+        })
+        .catch(() => {
+          info('取消编辑')
+        })
+
+      // confirm('提示', '确定要编辑吗?')
+      //   .then(() => {
+      //     this.$emit('onEditTag', item)
+      //   })
+      //   .catch(() => {
+      //     info('取消编辑')
+      //   })
     },
-    removeTag(item) {
-      console.log(item)
+    removeTag(item, index) {
+      confirm('提示', '确定要删除吗?')
+        .then(() => {
+          this.$emit('onDeleteTag', item)
+        })
+        .catch(() => {
+          info('取消删除')
+        })
     },
     handleClose(tag) {
       this.tagList.splice(this.tagList.indexOf(tag), 1);
@@ -54,7 +77,8 @@ export default {
     handleInputConfirm() {
       let inputValue = this.inputValue;
       if (inputValue) {
-        this.tagList.push(inputValue);
+        // this.tagList.push(inputValue);
+        this.$emit('onInsertTag', inputValue)
       }
       this.inputVisible = false;
       this.inputValue = '';
