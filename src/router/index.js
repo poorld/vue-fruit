@@ -93,14 +93,23 @@ export const constantRoutes = [
   },
 
   {
-    path: '/form',
+    path: '/discounts',
     component: Layout,
+    redirect: '/discounts/index',
+    name: '优惠活动',
+    meta: { title: '优惠活动', icon: 'el-icon-s-help' },
     children: [
       {
         path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
+        name: '优惠活动',
+        component: () => import('@/views/discounts/index'),
+        meta: { title: '优惠活动', icon: 'form' }
+      },
+      {
+        path: 'type',
+        name: '优惠类型',
+        component: () => import('@/views/discounts/type'),
+        meta: { title: '优惠类型', icon: 'form' }
       }
     ]
   },
