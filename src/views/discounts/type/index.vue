@@ -18,6 +18,27 @@
         prop="description"
         label="说明">
       </el-table-column>
+
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button-group>
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              size="mini"
+              @click="handleEdit(scope.$index, scope.row)">
+            </el-button>
+
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="mini"
+              @click="handleDelete(scope.$index, scope.row)">
+            </el-button>
+          </el-button-group>
+        </template>
+      </el-table-column>
+
     </el-table>
   </div>
 </template>
@@ -31,18 +52,6 @@ export default {
         discountsCategoryId: '20160501',
         discounts: '折扣折扣折扣',
         discountsType: '折扣'
-      }, {
-        discountsCategoryId: '20160502',
-        discounts: '满减满减满减',
-        discountsType: '满减'
-      }, {
-        discountsCategoryId: '20160503',
-        discounts: '充值充值充值',
-        discountsType: '充值'
-      }, {
-        discountsCategoryId: '20160504',
-        discounts: '限时活动限时活动',
-        discountsType: '限时活动'
       }]
     }
   },
