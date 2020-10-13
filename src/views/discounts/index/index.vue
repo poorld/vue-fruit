@@ -74,36 +74,44 @@
 
         <el-form-item label="优惠类型" :label-width="formLabelWidth">
           <el-select v-model="form.type" placeholder="请选择优惠类型">
-            <el-option label="满减" value="0"></el-option>
-            <el-option label="折扣" value="1"></el-option>
-            <el-option label="充值" value="2"></el-option>
+            <el-option
+              v-for="item in options"
+              :key="item.discountsFlag"
+              :label="item.discountsType"
+              :value="item.discountsFlag">
+            </el-option>
           </el-select>
         </el-form-item>
 
         <el-form-item label="满足条件" :label-width="formLabelWidth">
-          <el-input placeholder="请输入内容" v-model="form.input2">
+          <el-input type="number" placeholder="请输入内容" v-model="form.conditions">
             <template slot="append">元</template>
           </el-input>
         </el-form-item>
 
+        <el-form-item label="满足条件说明" :label-width="formLabelWidth">
+          <el-input type="text" placeholder="请输入内容" v-model="form.conditionsExplain">
+          </el-input>
+        </el-form-item>
+
         <el-form-item label="享受优惠" :label-width="formLabelWidth">
-          <el-input placeholder="请输入内容" v-model="form.input2">
+          <el-input type="number" placeholder="请输入内容" v-model="form.discounts">
             <template slot="append">{{ form.type | activeFilters }}</template>
           </el-input>
         </el-form-item>
 
         <el-form-item label="仅限会员" :label-width="formLabelWidth">
-          <el-checkbox v-model="form.checked"></el-checkbox>
+          <el-checkbox v-model="form.members"></el-checkbox>
         </el-form-item>
 
         <el-form-item label="优惠说明" :label-width="formLabelWidth">
-          <el-input v-model="form.input2"></el-input>
+          <el-input v-model="form.explain"></el-input>
         </el-form-item>
 
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button type="primary" @click="formConfirm">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -111,6 +119,9 @@
 </template>
 
 <script>
+import { getDiscountsCat } from '@/api/discountsCategory'
+import { addDiscounts } from '@/api/discounts'
+
 export default {
   data() {
     return {
@@ -119,16 +130,25 @@ export default {
         discounts: '95%',
         explain: '会员购物享受95折优惠',
         conditions: '130',
-        conditions_explain: '满30元享受优惠',
+        conditionsExplain: '满30元享受优惠',
         members: true,
         type: '折扣'
       }],
       dialogFormVisible: false,
       form: {
         type: '',
-        input2: '',
-        checked: false
+        // 满足条件
+        conditions: '',
+        // 享受优惠
+        discounts: '',
+        members: false,
+        conditions_explain: '',
+        explain: '',
+        discountsCategory: {
+          discountsCategoryId: ''
+        }
       },
+      options: [],
       formLabelWidth: '120px'
     }
   },
@@ -136,9 +156,9 @@ export default {
   filters: {
     activeFilters(value) {
       // console.log(value)
-      if (value === '0')
+      if (value === 0)
         return '元'
-      else if (value === '1')
+      else if (value === 1)
         return '折'
       return '元'
     }
@@ -155,7 +175,30 @@ export default {
     },
     filterTag(value, row) {
       return row.members === value
+    },
+
+    getDiscountsCatByFlag(list, discountsFlag) {
+      return list.find(element => element.discountsFlag === discountsFlag)
+    },
+
+    formConfirm() {
+      // console.log(this.form)
+      const cat = this.getDiscountsCatByFlag(this.options, this.form.type)
+      this.form.discountsCategory.discountsCategoryId = cat.discountsCategoryId
+      // console.log(this.form)
+      addDiscounts(this.form)
+        .then(res => {
+
+        })
     }
+  },
+
+  created() {
+    getDiscountsCat()
+      .then(res => {
+        // this.form.type = res.data
+        this.options = res.data
+      })
   }
 }
 </script>
