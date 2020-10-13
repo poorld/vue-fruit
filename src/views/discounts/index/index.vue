@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-row>
-      <el-button @click="dialogFormVisible = true" icon="el-icon-plus" circle></el-button>
+      <el-button @click="handleOpen" icon="el-icon-plus" circle></el-button>
     </el-row>
 
     <el-table
@@ -9,7 +9,7 @@
       style="width: 100%"
       :row-class-name="tableRowClassName">
       <el-table-column
-        prop="id"
+        prop="discountsId"
         label="ID"
         width="180">
       </el-table-column>
@@ -28,7 +28,7 @@
         label="满足条件">
       </el-table-column>
       <el-table-column
-        prop="conditions_explain"
+        prop="conditionsExplain"
         label="满足条件说明">
       </el-table-column>
       <el-table-column
@@ -44,7 +44,7 @@
       </el-table-column>
 
       <el-table-column
-        prop="type"
+        prop="discountsCategory.discountsType"
         label="优惠类型">
       </el-table-column>
 
@@ -69,11 +69,15 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog title="优惠活动" :visible.sync="dialogFormVisible">
-      <el-form :model="form">
+    <el-dialog
+      title="优惠活动"
+      :visible.sync="dialogFormVisible"
+      :before-close="handleClose">
 
-        <el-form-item label="优惠类型" :label-width="formLabelWidth">
-          <el-select v-model="form.type" placeholder="请选择优惠类型">
+      <el-form :model="form" ref="form">
+
+        <el-form-item label="优惠类型" :label-width="formLabelWidth" prop="discountsCategory.discountsFlag">
+          <el-select v-model="form.discountsCategory.discountsFlag" placeholder="请选择优惠类型">
             <el-option
               v-for="item in options"
               :key="item.discountsFlag"
@@ -83,28 +87,28 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="满足条件" :label-width="formLabelWidth">
+        <el-form-item label="满足条件" :label-width="formLabelWidth" prop="conditions">
           <el-input type="number" placeholder="请输入内容" v-model="form.conditions">
             <template slot="append">元</template>
           </el-input>
         </el-form-item>
 
-        <el-form-item label="满足条件说明" :label-width="formLabelWidth">
+        <el-form-item label="满足条件说明" :label-width="formLabelWidth" prop="conditionsExplain">
           <el-input type="text" placeholder="请输入内容" v-model="form.conditionsExplain">
           </el-input>
         </el-form-item>
 
-        <el-form-item label="享受优惠" :label-width="formLabelWidth">
+        <el-form-item label="享受优惠" :label-width="formLabelWidth" prop="discounts">
           <el-input type="number" placeholder="请输入内容" v-model="form.discounts">
-            <template slot="append">{{ form.type | activeFilters }}</template>
+            <template slot="append">{{ form.discountsCategory.discountsFlag | activeFilters }}</template>
           </el-input>
         </el-form-item>
 
-        <el-form-item label="仅限会员" :label-width="formLabelWidth">
+        <el-form-item label="仅限会员" :label-width="formLabelWidth" prop="members">
           <el-checkbox v-model="form.members"></el-checkbox>
         </el-form-item>
 
-        <el-form-item label="优惠说明" :label-width="formLabelWidth">
+        <el-form-item label="优惠说明" :label-width="formLabelWidth" prop="explain">
           <el-input v-model="form.explain"></el-input>
         </el-form-item>
 
@@ -120,36 +124,42 @@
 
 <script>
 import { getDiscountsCat } from '@/api/discountsCategory'
-import { addDiscounts } from '@/api/discounts'
-
+import { addDiscounts, getDiscounts, updateDiscounts,deleteDiscounts } from '@/api/discounts'
+import { confirm } from '@/utils/dialog'
 export default {
   data() {
     return {
       tableData: [{
-        id: '20160501',
-        discounts: '95%',
-        explain: '会员购物享受95折优惠',
-        conditions: '130',
-        conditionsExplain: '满30元享受优惠',
-        members: true,
-        type: '折扣'
+        "discountsId": 10010,
+        "explain": "满22元减2噢噢噢噢",
+        "conditions": 22,
+        "conditionsExplain": "满22元才能享受优惠",
+        "discounts": "2",
+        "members": false,
+        "discountsCategory": {
+            "discountsCategoryId": 2001,
+            "discountsType": "满减",
+            "discountsFlag": 0,
+            "description": "满减呀呀呀"
+        }
       }],
       dialogFormVisible: false,
       form: {
-        type: '',
         // 满足条件
         conditions: '',
         // 享受优惠
         discounts: '',
         members: false,
-        conditions_explain: '',
+        conditionsExplain: '',
         explain: '',
         discountsCategory: {
-          discountsCategoryId: ''
+          discountsCategoryId: '',
+          discountsFlag: ''
         }
       },
       options: [],
-      formLabelWidth: '120px'
+      formLabelWidth: '120px',
+      update: false
     }
   },
 
@@ -183,21 +193,73 @@ export default {
 
     formConfirm() {
       // console.log(this.form)
-      const cat = this.getDiscountsCatByFlag(this.options, this.form.type)
-      this.form.discountsCategory.discountsCategoryId = cat.discountsCategoryId
+      // const cat = this.getDiscountsCatByFlag(this.options, this.form.type)
+      // this.form.discountsCategory.discountsCategoryId = cat.discountsCategoryId
       // console.log(this.form)
-      addDiscounts(this.form)
-        .then(res => {
+      console.log(this.update)
+      if (this.update) {
+        updateDiscounts(this.form)
+      } else {
+        addDiscounts(this.form)
+      }
 
+    },
+
+    handleEdit(index, row) {
+      this.$nextTick(() => {
+        if(this.$refs['form'])
+          this.$refs['form'].resetFields()
+
+        // this.form = Object.assign({}, row)
+        Object.assign(this.form, row)
+      })
+
+      // this.form = Object.assign({}, row)
+      this.dialogFormVisible = true
+      this.update = true
+    },
+
+    handleOpen() {
+      // this.$nextTick(()=>{
+      //   if(this.$refs['form'])
+      //     this.$refs['form'].resetFields()
+      // })
+      this.update = false
+      this.dialogFormVisible = true
+
+    },
+
+    handleClose() {
+      this.dialogFormVisible = false
+      this.$nextTick(()=>{
+        if(this.$refs['form'])
+          this.$refs['form'].resetFields()
+
+      })
+    },
+
+    handleDelete(index, row) {
+      confirm('提示', `您确定要删除[${row.explain}]吗？`)
+        .then((_) => {
+          return deleteDiscounts(row.discountsId)
         })
+        .then(data => {
+          this.$router.go(0)
+        })
+
     }
+
   },
 
   created() {
+    getDiscounts()
+      .then(data => {
+        this.tableData = data
+      })
     getDiscountsCat()
-      .then(res => {
+      .then(data => {
         // this.form.type = res.data
-        this.options = res.data
+        this.options = data
       })
   }
 }

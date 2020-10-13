@@ -348,7 +348,7 @@ export default {
       if (value) {
         item.name = value;
         updateCategory(item).then((res) => {
-          this.dynamicTags.splice(index, 1, res.data);
+          this.dynamicTags.splice(index, 1, res)
         });
       }
     },
@@ -365,9 +365,13 @@ export default {
     onInsertTag(value) {
       console.log("onInsertTag", value);
       addCategory({ name: value }).then((res) => {
-        this.dynamicTags.push(res.data);
+        this.dynamicTags.push(res)
       });
     },
+
+    handleChange() {
+
+    }
   },
 };
 </script>

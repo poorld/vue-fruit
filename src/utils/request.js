@@ -144,14 +144,16 @@ mockService.interceptors.response.use(
 //POST传参序列化
 apiFruitService.interceptors.request.use(
   config => {
-    console.log(config, "request")
+    console.error('---------------request---------------')
+    console.log(config, 'config')
     if (config.method === "post") {
       let curPost = config.url.split("/")[config.url.split("/").length - 1]
       if (curPost === "upload" || curPost === "multipleFiles") {
         return config // 这里对上传文件/图片的 api 不做传参序列化处理
       } else {
         config.data = JSON.stringify(config.data)
-        console.log(config.data)
+        console.error(config.data, 'data')
+        console.error('---------------request---------------')
         // config.headers = {
         //   'Content-Type': 'application/json; charset=UTF-8'
         // }
@@ -206,8 +208,10 @@ apiFruitService.interceptors.response.use(
       }
       return Promise.reject(new Error(res.message || 'Error'))
     } else {
+      console.error('***************response***************')
       console.log(res.data)
-      return res
+      console.error('***************response***************')
+      return res.data
     }
   },
   error => {
