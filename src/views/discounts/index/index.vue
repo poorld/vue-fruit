@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-row>
-      <el-button @click="handleOpen" icon="el-icon-plus" circle></el-button>
+      <el-button icon="el-icon-plus" circle @click="handleOpen"/>
     </el-row>
 
     <el-table
@@ -127,23 +127,23 @@
 
 <script>
 import { getDiscountsCat } from '@/api/discountsCategory'
-import { addDiscounts, getDiscounts, updateDiscounts,deleteDiscounts } from '@/api/discounts'
+import { addDiscounts, getDiscounts, updateDiscounts, deleteDiscounts } from '@/api/discounts'
 import { confirm } from '@/utils/dialog'
 export default {
   data() {
     return {
       tableData: [{
-        "discountsId": 10010,
-        "explain": "满22元减2噢噢噢噢",
-        "conditions": 22,
-        "conditionsExplain": "满22元才能享受优惠",
-        "discounts": "2",
-        "members": false,
-        "discountsCategory": {
-            "discountsCategoryId": 2001,
-            "discountsType": "满减",
-            "discountsFlag": 0,
-            "description": "满减呀呀呀"
+        discountsId: 10010,
+        explain: '满22元减2噢噢噢噢',
+        conditions: 22,
+        conditionsExplain: '满22元才能享受优惠',
+        discounts: 2,
+        members: false,
+        discountsCategory: {
+          discountsCategoryId: 2001,
+          discountsType: '满减',
+          discountsFlag: 0,
+          description: '满减呀呀呀'
         }
       }],
       dialogFormVisible: false,
@@ -168,10 +168,11 @@ export default {
 
   filters: {
     activeFilters(value) {
-      if (value === 0)
+      if (value === 0) {
         return '元'
-      else if (value === 1)
+      } else if (value === 1) {
         return '折'
+      }
       return '元'
     },
 
@@ -184,10 +185,11 @@ export default {
       // console.log(discounts,discountsFlag)
       // return discounts + this.activeFilters(discountsFlag)
       let unit = '元'
-      if (discountsFlag === 0)
+      if (discountsFlag === 0) {
         unit = '元'
-      else if (discountsFlag === 1)
+      } else if (discountsFlag === 1) {
         unit = '折'
+      }
       return discounts + unit
     }
   },
@@ -246,8 +248,9 @@ export default {
 
     handleEdit(index, row) {
       this.$nextTick(() => {
-        if(this.$refs['form'])
+        if (this.$refs['form']) {
           this.$refs['form'].resetFields()
+        }
 
         // this.form = Object.assign({}, row)
         Object.assign(this.form, row)
@@ -265,15 +268,14 @@ export default {
       // })
       this.update = false
       this.dialogFormVisible = true
-
     },
 
     handleClose() {
       this.dialogFormVisible = false
-      this.$nextTick(()=>{
-        if(this.$refs['form'])
+      this.$nextTick( () => {
+        if (this.$refs['form']) {
           this.$refs['form'].resetFields()
-
+        }
       })
     },
 

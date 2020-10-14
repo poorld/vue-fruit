@@ -228,13 +228,13 @@ export default {
     },
 
     handleCheckAllChange(val) {
-      this.checkedCities = val ? cityOptions : [];
+      this.checkedCities = val ? cityOptions : []
       this.isIndeterminate = false;
     },
     handleCheckedCitiesChange(value) {
-      let checkedCount = value.length;
-      this.checkAll = checkedCount === this.cities.length;
-      this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length;
+      let checkedCount = value.length
+      this.checkAll = checkedCount === this.cities.length
+      this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length
     },
 
     addProduct() {

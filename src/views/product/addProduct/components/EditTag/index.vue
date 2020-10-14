@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div v-for="(item, index) in  tagList" :key="index" style="display: inline-block;margin-right: 10px;">
-      <el-tooltip class="item" effect="dark" content="价格:37.2（斤）| 库存：52 " placement="top">
+    <div v-for="(item, index) in tagList" :key="index" style="display: inline-block;margin-right: 10px;">
+      <el-tooltip class="item" effect="dark" :content="specContent(item)" placement="top">
         <span class="el-tag el-tag--light">
-          {{ item }}
+          {{ item.specName }}
           <i class="el-icon-edit el-tag__edit" v-on:click="editTag(item, index)"></i>
           <i class="el-tag__close el-icon-close" v-on:click="removeTag(item, index)"></i>
         </span>
@@ -29,76 +29,101 @@
       width="50%"
       center>
       <span style="margin-left: 20px;font-size: 13px;">请设置一个规格名称（比如：小果）</span>
-      <el-form style="margin-top: 10px" :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-        <el-form-item label="规格名称" prop="name">
-          <el-input v-model="ruleForm.name"></el-input>
+      <el-form style="margin-top: 10px" :model="spec" :rules="rules" ref="spec" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="规格名称" prop="specName">
+          <el-input v-model="spec.specName"></el-input>
         </el-form-item>
 
-        <el-form-item label="性质" prop="attr">
-          <el-radio-group v-model="ruleForm.attr">
-            <el-radio label="斤"></el-radio>
-            <el-radio label="箱"></el-radio>
-            <el-radio label="盒"></el-radio>
-            <el-radio label="包"></el-radio>
-            <el-radio label="袋"></el-radio>
-            <el-radio label="罐"></el-radio>
+        <el-form-item label="SKU" prop="attrbute">
+          <el-radio-group v-model="spec.sku.attrbute" size="mini" @change="skuChange">
+            <el-radio-button
+              v-for="item in skus"
+              :label="item.attrbute"
+              :key="item.skuId">
+            </el-radio-button>
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="库存" prop="name">
-          <el-input v-model="ruleForm.name"></el-input>
+        <el-form-item label="库存" prop="quantity">
+          <el-input v-model.number="spec.quantity">
+            <template slot="append">{{ spec.sku.attrbute }}</template>
+          </el-input>
         </el-form-item>
 
-        <el-form-item label="价格" prop="name">
-          <el-input v-model="ruleForm.name"></el-input>
+        <el-form-item label="价格" prop="price">
+          <el-input v-model="spec.price">
+             <template slot="append">元/{{ spec.sku.attrbute }}</template>
+          </el-input>
         </el-form-item>
       </el-form>
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="centerDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="centerDialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="submitForm('spec')">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import {confirm, success, info, dialogInput} from '@/utils/dialog'
+import { confirm, success, info, dialogInput } from '@/utils/dialog'
+import { getSku } from '@/api/sku'
 
 export default {
   props: {
     tagList: Array,
   },
+  computed: {
+    specContent: function() {
+      return function(item) {
+        return `价格:${item.price}（元/${item.sku.attrbute}）| 库存：${item.quantity} ${item.sku.attrbute}`
+      }
+    }
+  },
   data() {
     return {
+      skus: [],
       inputVisible: false,
       inputValue: '',
       centerDialogVisible: false,
-      ruleForm: {
-        name: '',
-        resource: ''
+      spec: {
+        specName:'',
+        price: '',
+        quantity: '',
+        sku:{
+            skuId: '',
+            attrbute:''
+        }
       },
       rules: {
-        name: [
-          { required: true, message: '请输入规格名称', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-        ],
-        attr:[
-          { required: true, message: '请选择规格属性', trigger: 'change' }
-        ],
+        // specName: [
+        //   { required: true, message: '请输入规格名称', trigger: 'blur' },
+        //   { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        // ],
+        // attrbute: [
+        //   { required: true, message: '请选择规格属性', trigger: 'change' }
+        // ],
+        // quantity: [
+        //   { required: true, message: '请输入库存', trigger: 'blur' },
+        //   { min: 1, max: 5, message: '长度在 1 到 5 个字符', trigger: 'blur' }
+        // ],
+        // price: [
+        //   { required: true, message: '请输入价格', trigger: 'blur' },
+        //   { min: 1, max: 5, message: '长度在 1 到 5 个字符', trigger: 'blur' }
+        // ]
       }
     }
   },
   methods: {
     editTag(item, index) {
 
-      dialogInput('提示', '编辑标签', item.name)
-        .then(({ value }) => {
-          this.$emit('onEditTag', item, value, index)
-        })
-        .catch(() => {
-          info('取消编辑')
-        })
+      // dialogInput('提示', '编辑标签', item.name)
+      //   .then(({ value }) => {
+      //     this.$emit('onEditTag', item, value, index)
+      //   })
+      //   .catch(() => {
+      //     info('取消编辑')
+      //   })
 
       // confirm('提示', '确定要编辑吗?')
       //   .then(() => {
@@ -140,10 +165,14 @@ export default {
       this.inputValue = '';
     },
 
+    handleDialogConfirm() {
+      console.log(this.spec)
+    },
+
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert('submit!');
+          this.$emit('onInsertTag', this.spec)
         } else {
           console.log('error submit!!');
           return false;
@@ -152,8 +181,31 @@ export default {
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
+    },
+
+    skuChange(label) {
+      if(!label)
+        return
+
+      // this.spec.sku.attrbute = label
+      this.spec.sku.skuId = this.skus.find( item => {
+        return item.attrbute == label
+      }).skuId
     }
+  },
+
+  created() {
+    getSku()
+      .then(data => {
+        this.skus = data
+        if (data.length > 0) {
+          this.spec.sku.skuId = data[0].skuId
+          this.spec.sku.attrbute = data[0].attrbute
+        }
+      })
   }
+
+
 }
 </script>
 

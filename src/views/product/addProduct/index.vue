@@ -27,13 +27,11 @@
               placeholder="请选择商品分类"
             >
               <el-option
-                label="区域一"
-                value="shanghai"
-              ></el-option>
-              <el-option
-                label="区域二"
-                value="beijing"
-              ></el-option>
+                v-for="item in productCategory"
+                :key="item.value"
+                :label="item.name"
+                :value="item.productCategoryId">
+              </el-option>
             </el-select>
           </el-form-item>
 
@@ -44,11 +42,11 @@
             ></el-input>
           </el-form-item>
 
-          <el-form-item label="封面价格">
+          <el-form-item label="价格">
             <el-input
               type="number"
               placeholder="请输入内容"
-              v-model="form.date1"
+              v-model="form.shopPrice"
               style="width: 40%;"
             >
               <template slot="prepend">市场价格</template>
@@ -56,7 +54,7 @@
             <el-input
               type="number"
               placeholder="请输入内容"
-              v-model="form.date2"
+              v-model="form.price"
               style="width: 40%;float: right;"
             >
               <template slot="prepend">售卖价格</template>
@@ -275,10 +273,13 @@ import { getCategory } from '@/api/category'
 export default {
   data() {
     return {
+      productCategory: [],
       form: {
         name: '',
         productCategoryId: '',
-        explain: ''
+        explain: '',
+        shopPrice: '',
+        price: ''
       },
       // 商品封面
       dialogImageUrl: "",
@@ -302,7 +303,7 @@ export default {
       ],
 
       //规格
-      dynamicTags: ["标签一", "标签二", "标签三"],
+      dynamicTags: [],
       activeNames: ['1'],
 
       // 会员优惠
@@ -368,9 +369,10 @@ export default {
     // 添加
     onInsertTag(value) {
       console.log("onInsertTag", value);
-      addCategory({ name: value }).then((res) => {
-        this.dynamicTags.push(res)
-      });
+      this.dynamicTags.push(value)
+      // addCategory({ name: value }).then((res) => {
+      //   this.dynamicTags.push(res)
+      // });
     },
 
     handleChange() {
@@ -380,10 +382,14 @@ export default {
     initData() {
       getCategory()
         .then(data => {
-
+          this.productCategory = data
         })
     }
   },
+
+  created() {
+    this.initData()
+  }
 };
 </script>
 
