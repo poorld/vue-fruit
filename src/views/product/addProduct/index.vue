@@ -19,12 +19,12 @@
           label-width="80px"
         >
           <el-form-item label="商品名称">
-            <el-input v-model="form.productName"></el-input>
+            <el-input v-model="form.name"></el-input>
           </el-form-item>
           <el-form-item label="商品分类">
             <el-select
-              v-model="form.region"
-              placeholder="请选择活动区域"
+              v-model="form.productCategoryId"
+              placeholder="请选择商品分类"
             >
               <el-option
                 label="区域一"
@@ -40,7 +40,7 @@
           <el-form-item label="商品描述">
             <el-input
               type="textarea"
-              v-model="form.desc"
+              v-model="form.explain"
             ></el-input>
           </el-form-item>
 
@@ -271,11 +271,15 @@
 
 <script>
 import EditTag from "./components/EditTag/index.vue";
-
+import { getCategory } from '@/api/category'
 export default {
   data() {
     return {
-      form: {},
+      form: {
+        name: '',
+        productCategoryId: '',
+        explain: ''
+      },
       // 商品封面
       dialogImageUrl: "",
       dialogVisible: false,
@@ -371,6 +375,13 @@ export default {
 
     handleChange() {
 
+    },
+
+    initData() {
+      getCategory()
+        .then(data => {
+
+        })
     }
   },
 };

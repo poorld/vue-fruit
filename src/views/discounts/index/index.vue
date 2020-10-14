@@ -11,12 +11,15 @@
       <el-table-column
         prop="discountsId"
         label="ID"
-        width="180">
+        width="120">
       </el-table-column>
       <el-table-column
         prop="discounts"
         label="优惠"
-        width="180">
+        width="120">
+        <template slot-scope="scope">
+          {{ scope.row.discounts | discountsFilter(scope.row.discountsCategory.discountsFlag) }}
+        </template>
       </el-table-column>
       <el-table-column
         prop="explain"
@@ -77,12 +80,12 @@
       <el-form :model="form" ref="form">
 
         <el-form-item label="优惠类型" :label-width="formLabelWidth" prop="discountsCategory.discountsFlag">
-          <el-select v-model="form.discountsCategory.discountsFlag" placeholder="请选择优惠类型">
+          <el-select v-model="form.discountsCategory.discountsCategoryId" placeholder="请选择优惠类型">
             <el-option
               v-for="item in options"
               :key="item.discountsFlag"
               :label="item.discountsType"
-              :value="item.discountsFlag">
+              :value="item.discountsCategoryId">
             </el-option>
           </el-select>
         </el-form-item>
@@ -165,16 +168,43 @@ export default {
 
   filters: {
     activeFilters(value) {
-      // console.log(value)
       if (value === 0)
         return '元'
       else if (value === 1)
         return '折'
       return '元'
+    },
+
+    /**
+     * {{ scope.row.discounts | discountsFilter(scope.row.discountsCategory.discountsFlag) }}
+     * discounts作为第一个参数传入discountsFilter过滤器
+     * scope.row.discountsCategory.discountsFlag作为第二个参数传入discountsFilter过滤器
+     */
+    discountsFilter(discounts, discountsFlag) {
+      // console.log(discounts,discountsFlag)
+      // return discounts + this.activeFilters(discountsFlag)
+      let unit = '元'
+      if (discountsFlag === 0)
+        unit = '元'
+      else if (discountsFlag === 1)
+        unit = '折'
+      return discounts + unit
     }
   },
 
   methods: {
+    initData() {
+      getDiscounts()
+        .then(data => {
+          this.tableData = data
+        })
+      getDiscountsCat()
+        .then(data => {
+          // this.form.type = res.data
+          this.options = data
+        })
+    },
+
     tableRowClassName({ row, rowIndex }) {
       if (rowIndex === 1) {
         return 'warning-row'
@@ -187,8 +217,12 @@ export default {
       return row.members === value
     },
 
-    getDiscountsCatByFlag(list, discountsFlag) {
-      return list.find(element => element.discountsFlag === discountsFlag)
+    getDiscountsCatByFlag(list, discountsCatFlag) {
+      return list.find(element => element.discountsCatFlag === discountsCatFlag)
+    },
+
+    getDiscountsCatById(list, discountsCategoryId) {
+      return list.find(element => element.discountsCategoryId === discountsCategoryId)
     },
 
     formConfirm() {
@@ -196,13 +230,18 @@ export default {
       // const cat = this.getDiscountsCatByFlag(this.options, this.form.type)
       // this.form.discountsCategory.discountsCategoryId = cat.discountsCategoryId
       // console.log(this.form)
-      console.log(this.update)
       if (this.update) {
         updateDiscounts(this.form)
+          .then(data => {
+            this.initData()
+          })
       } else {
         addDiscounts(this.form)
+          .then(data => {
+            this.initData()
+          })
       }
-
+      this.dialogFormVisible = false
     },
 
     handleEdit(index, row) {
@@ -251,16 +290,25 @@ export default {
 
   },
 
+  computed: {
+    // 计算属性的 getter
+    flag: function () {
+      // `this` 指向 vm 实例
+      if (this.options && this.form.discountsCategory.discountsCategoryId) {
+        const disc = this.getDiscountsCatById(this.options, this.form.discountsCategory.discountsCategoryId)
+        const value = disc.discountsCategory.discountsFlag
+        if (value === 0)
+          return '元'
+        else if (value === 1)
+          return '折'
+        return '元'
+      }
+      return '元'
+    }
+  },
+
   created() {
-    getDiscounts()
-      .then(data => {
-        this.tableData = data
-      })
-    getDiscountsCat()
-      .then(data => {
-        // this.form.type = res.data
-        this.options = data
-      })
+    this.initData()
   }
 }
 </script>

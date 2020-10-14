@@ -144,7 +144,6 @@ mockService.interceptors.response.use(
 //POST传参序列化
 apiFruitService.interceptors.request.use(
   config => {
-    console.error('---------------request---------------')
     console.log(config, 'config')
     if (config.method === "post") {
       let curPost = config.url.split("/")[config.url.split("/").length - 1]
@@ -153,7 +152,6 @@ apiFruitService.interceptors.request.use(
       } else {
         config.data = JSON.stringify(config.data)
         console.error(config.data, 'data')
-        console.error('---------------request---------------')
         // config.headers = {
         //   'Content-Type': 'application/json; charset=UTF-8'
         // }
@@ -208,9 +206,7 @@ apiFruitService.interceptors.response.use(
       }
       return Promise.reject(new Error(res.message || 'Error'))
     } else {
-      console.error('***************response***************')
       console.log(res.data)
-      console.error('***************response***************')
       return res.data
     }
   },

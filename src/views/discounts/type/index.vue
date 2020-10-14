@@ -74,7 +74,7 @@ export default {
     getDiscountsCat()
       .then(res => {
         // console.log(res.data)
-        this.tableData = res.data
+        this.tableData = res
       })
   }
 }
