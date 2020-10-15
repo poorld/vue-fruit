@@ -73,7 +73,7 @@
         <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
       </div>
       <div class="text item">
-        <span class="item-title">添加规格</span>
+        <!-- <span class="item-title">添加规格</span> -->
         <div>
           <edit-tag
             :tagList="dynamicTags"
@@ -95,21 +95,25 @@
       </div>
       <div class="text item">
         <span class="item-title">商品封面（最多上传1张）</span>
+        <!-- action="http://localhost:9000/api/app/file/upload" -->
+        <!-- :http-request="uploadImg" -->
         <el-upload
-          action="http://localhost:9000/api/app/file/upload"
           name="file"
+          action=""
+          :limit="1"
+          :http-request="uploadCoverImg"
           list-type="picture-card"
-          :before-upload="beforeAvatarUpload"
-          :on-success="handleAvatarSuccess"
-          :on-preview="handlePictureCardPreview"
-          :on-remove="handleRemove"
+          :before-upload="beforeCoverUpload"
+          :on-success="handleCoverSuccess"
+          :on-preview="handleCoverPreview"
+          :on-remove="handleCoverRemove"
         >
           <i class="el-icon-plus"></i>
         </el-upload>
-        <el-dialog :visible.sync="dialogVisible">
+        <el-dialog :visible.sync="CoverImgVisible">
           <img
             width="100%"
-            :src="dialogImageUrl"
+            :src="coverImageUrl"
             alt=""
           >
         </el-dialog>
@@ -120,61 +124,25 @@
         <el-upload
           action="http://localhost:9000/api/app/file/upload"
           list-type="picture-card"
-          :auto-upload="false"
-        >
-          <i
-            slot="default"
-            class="el-icon-plus"
-          ></i>
-          <div
-            slot="file"
-            slot-scope="{file}"
-          >
-            <img
-              class="el-upload-list__item-thumbnail"
-              :src="file.url"
-              alt=""
-            >
-            <span class="el-upload-list__item-actions">
-              <span
-                class="el-upload-list__item-preview"
-                @click="handlePictureCardPreview(file)"
-              >
-                <i class="el-icon-zoom-in"></i>
-              </span>
-              <span
-                v-if="!disabled"
-                class="el-upload-list__item-delete"
-                @click="handleDownload(file)"
-              >
-                <i class="el-icon-download"></i>
-              </span>
-              <span
-                v-if="!disabled"
-                class="el-upload-list__item-delete"
-                @click="handleRemove(file)"
-              >
-                <i class="el-icon-delete"></i>
-              </span>
-            </span>
-          </div>
+          :limit="6"
+          :on-success="handleBannerSuccess"
+          :on-preview="handleBannerPreview"
+          :on-remove="handleBannerRemove">
+          <i class="el-icon-plus"></i>
         </el-upload>
-        <el-dialog :visible.sync="detailVisible">
-          <img
-            width="100%"
-            :src="detailImageUrl"
-            alt=""
-          >
+        <el-dialog :visible.sync="bannerVisible">
+          <img width="100%" :src="bannerImageUrl" alt="">
         </el-dialog>
+
       </div>
 
       <div class="text item">
-        <span class="item-title">水果介绍（用于水果详情，最多上传6张）</span>
+        <span class="item-title">水果介绍（用于水果详情）</span>
         <el-upload
           class="upload-demo"
-          action="https://jsonplaceholder.typicode.com/posts/"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
+          action="http://localhost:9000/api/app/file/upload"
+          :on-success="handleInfoSuccess"
+          :on-remove="handleInfoRemove"
           :file-list="fileList"
           list-type="picture"
         >
@@ -203,21 +171,23 @@
         <!-- <span class="item-title">参与活动</span> -->
         <el-collapse v-model="activeNames" @change="handleChange">
           <el-collapse-item title="会员优惠" name="1">
-            <el-checkbox-group v-model="checkList">
-              <el-checkbox label="复选框 A"></el-checkbox>
-              <el-checkbox label="复选框 B"></el-checkbox>
-              <el-checkbox label="复选框 C"></el-checkbox>
-              <el-checkbox label="禁用" disabled></el-checkbox>
-              <el-checkbox label="选中且禁用" disabled></el-checkbox>
+            <el-checkbox-group v-model="checkMDiscountList">
+              <el-checkbox
+                v-for="item in memberDiscounts"
+                :key="item.discountsId"
+                :label="item.discountsId">
+                {{item.discountsExplain}}
+              </el-checkbox>
             </el-checkbox-group>
           </el-collapse-item>
           <el-collapse-item title="用户优惠" name="2">
-            <el-checkbox-group v-model="checkList">
-              <el-checkbox label="复选框 A"></el-checkbox>
-              <el-checkbox label="复选框 B"></el-checkbox>
-              <el-checkbox label="复选框 C"></el-checkbox>
-              <el-checkbox label="禁用" disabled></el-checkbox>
-              <el-checkbox label="选中且禁用" disabled></el-checkbox>
+            <el-checkbox-group v-model="checkUDiscountList">
+              <el-checkbox
+                v-for="item in userDiscounts"
+                :key="item.discountsId"
+                :label="item.discountsId">
+                {{item.discountsExplain}}
+              </el-checkbox>
             </el-checkbox-group>
           </el-collapse-item>
           <el-collapse-item title="上线板块" name="3">
@@ -225,12 +195,11 @@
             <div>热销水果：语言表达清晰且表意明确，让用户快速理解进而作出决策；</div>
             <div>限时抢购：界面简单直白，让用户快速识别而非回忆，减少用户记忆负担。</div>
             <div>每日精选：设计简洁直观的操作流程；</div>
-            <el-checkbox-group v-model="checkList">
-              <el-checkbox label="复选框 A"></el-checkbox>
-              <el-checkbox label="复选框 B"></el-checkbox>
-              <el-checkbox label="复选框 C"></el-checkbox>
-              <el-checkbox label="禁用" disabled></el-checkbox>
-              <el-checkbox label="选中且禁用" disabled></el-checkbox>
+            <el-checkbox-group v-model="checkMDiscountList">
+              <el-checkbox label="新品上市" disabled></el-checkbox>
+              <el-checkbox label="热销水果"></el-checkbox>
+              <el-checkbox label="限时抢购" disabled></el-checkbox>
+              <el-checkbox label="每日精选"></el-checkbox>
             </el-checkbox-group>
           </el-collapse-item>
 
@@ -254,22 +223,30 @@
 
        <div class="text item">
         <span class="item-title">商品携带标签</span>
-          <el-checkbox-group v-model="checkList">
-            <el-checkbox label="产地直销"></el-checkbox>
-            <el-checkbox label="会员优惠"></el-checkbox>
-            <el-checkbox label="限时优惠"></el-checkbox>
-            <el-checkbox label="新品上市" disabled></el-checkbox>
-            <el-checkbox label="选中且禁用" disabled></el-checkbox>
+          <el-checkbox-group v-model="checkTagList">
+            <el-checkbox
+                v-for="item in tags"
+                :key="item.tagId"
+                :label="item.tagId">
+                {{item.name}}
+              </el-checkbox>
           </el-checkbox-group>
 
       </div>
     </el-card>
+
+    <el-row style="margin: 0 auto;margin-top: 20px;text-align: center;">
+      <el-button type="primary" @click="add" round>提交表单</el-button>
+    </el-row>
   </div>
 </template>
 
 <script>
-import EditTag from "./components/EditTag/index.vue";
+import EditTag from './components/EditTag/index.vue'
+import { uploadImage } from '@/api/common'
 import { getCategory } from '@/api/category'
+import { getUserDiscounts, getMemberDiscounts } from '@/api/discounts'
+import { getTags } from '@/api/tag'
 export default {
   data() {
     return {
@@ -279,35 +256,44 @@ export default {
         productCategoryId: '',
         explain: '',
         shopPrice: '',
-        price: ''
+        price: '',
+
+        // 封面
+        defaultImg: '',
+        productBannerImages: []
+
       },
       // 商品封面
-      dialogImageUrl: "",
-      dialogVisible: false,
+      coverImageUrl: '',
+      CoverImgVisible: false,
       // 商品详情
-      detailVisible: false,
-      detailImageUrl: "",
+      bannerVisible: false,
+      bannerImageUrl: '',
+      // 用于保存幻灯片图片地址，与表单关联
+      bannerImageList: [],
+
+      // 用于保存介绍图片地址，与表单关联
+      infoImageList: [],
       disabled: false,
       // 水果介绍
-      fileList: [
-        {
-          name: "food.jpeg",
-          url:
-            "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100",
-        },
-        {
-          name: "food2.jpeg",
-          url:
-            "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100",
-        },
-      ],
+      fileList: [],
 
       //规格
       dynamicTags: [],
       activeNames: ['1'],
 
-      // 会员优惠
-      checkList: [],
+      // 选中会员优惠
+      checkMDiscountList: [],
+      // 选中用户优惠
+      checkUDiscountList: [],
+      // 选中标签
+      checkTagList: [],
+      // 会员优惠列表
+      memberDiscounts: [],
+      // 用户优惠列表
+      userDiscounts: [],
+      // 标签列表
+      tags: [],
 
       // 推荐
       checked: true
@@ -319,10 +305,13 @@ export default {
   },
 
   methods: {
-    handleAvatarSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw);
+    handleCoverSuccess(res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw)
     },
-    beforeAvatarUpload(file) {
+    beforeBannerUpload(file) {
+      console.log(file)
+    },
+    beforeCoverUpload(file) {
       const isJPG = file.type === "image/jpeg";
       const isLt2M = file.size / 1024 / 1024 < 2;
 
@@ -335,16 +324,34 @@ export default {
       return isJPG && isLt2M;
     },
 
-    handlePreview(file) {
-      console.log(file);
+    // 封面
+    handleCoverRemove(file) {
+      this.form.defaultImg = null
+    },
+    handleCoverPreview(file) {
+      this.coverImageUrl = file.url;
+      this.CoverImgVisible = true;
     },
 
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
+    // 幻灯片
+    handleBannerPreview(file) {
+      this.bannerImageUrl = file.url
+      this.CoverImgVisible = true
     },
-    handlePictureCardPreview(file) {
-      this.dialogImageUrl = file.url;
-      this.dialogVisible = true;
+    handleBannerSuccess(response, file, fileList) {
+      this.bannerImageList = fileList
+    },
+    handleBannerRemove(file, fileList) {
+      console.log(fileList)
+      this.bannerImageList = fileList
+    },
+
+    // 介绍
+    handleInfoSuccess(response, file, fileList) {
+      this.infoImageList = fileList
+    },
+    handleInfoRemove(file, fileList) {
+      this.infoImageList = fileList
     },
 
     // 编辑
@@ -379,10 +386,37 @@ export default {
 
     },
 
+    uploadCoverImg(fileObj) {
+      uploadImage(fileObj)
+        .then(data => {
+          this.form.defaultImg = data.fileDownloadUrl
+        })
+
+    },
+
+    add() {
+      console.log(this.checkMDiscountList)
+      console.log(this.checkUDiscountList)
+      console.log(this.checkTagList)
+    },
+
     initData() {
       getCategory()
         .then(data => {
           this.productCategory = data
+        })
+
+      getMemberDiscounts()
+        .then(data => {
+          this.memberDiscounts = data
+        })
+      getUserDiscounts()
+        .then(data => {
+          this.userDiscounts = data
+        })
+      getTags()
+        .then(data => {
+          this.tags = data
         })
     }
   },

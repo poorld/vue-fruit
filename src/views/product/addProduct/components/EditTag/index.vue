@@ -3,24 +3,14 @@
     <div v-for="(item, index) in tagList" :key="index" style="display: inline-block;margin-right: 10px;">
       <el-tooltip class="item" effect="dark" :content="specContent(item)" placement="top">
         <span class="el-tag el-tag--light">
-          {{ item.specName }}
+          {{ item.specName }}（{{ item.sku.attrbute }}）
           <i class="el-icon-edit el-tag__edit" v-on:click="editTag(item, index)"></i>
           <i class="el-tag__close el-icon-close" v-on:click="removeTag(item, index)"></i>
         </span>
       </el-tooltip>
     </div>
 
-    <el-input
-      class="input-new-tag"
-      v-if="inputVisible"
-      v-model="inputValue"
-      ref="saveTagInput"
-      size="small"
-      @keyup.enter.native="handleInputConfirm"
-      @blur="handleInputConfirm"
-    >
-    </el-input>
-    <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+    <el-button class="button-new-tag" size="small" @click="showInput">+ 添加规格</el-button>
 
 
     <el-dialog
@@ -83,8 +73,6 @@ export default {
   data() {
     return {
       skus: [],
-      inputVisible: false,
-      inputValue: '',
       centerDialogVisible: false,
       spec: {
         specName:'',
@@ -154,25 +142,18 @@ export default {
       this.centerDialogVisible = true
     },
 
-    handleInputConfirm() {
-      let inputValue = this.inputValue;
-      if (inputValue) {
-        this.centerDialogVisible = true
-        // this.tagList.push(inputValue);
-        this.$emit('onInsertTag', inputValue)
-      }
-      this.inputVisible = false;
-      this.inputValue = '';
-    },
 
-    handleDialogConfirm() {
-      console.log(this.spec)
-    },
+    // handleDialogConfirm() {
+    //   console.log(this.spec)
+    // },
 
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.$emit('onInsertTag', this.spec)
+          // this.$emit('onInsertTag', Object.assign({}, this.spec))
+          // 简单粗暴的对象深拷贝
+          this.$emit('onInsertTag', JSON.parse(JSON.stringify(this.spec)))
+          this.centerDialogVisible = false
         } else {
           console.log('error submit!!');
           return false;
@@ -187,9 +168,9 @@ export default {
       if(!label)
         return
 
-      // this.spec.sku.attrbute = label
+      this.spec.sku.attrbute = label
       this.spec.sku.skuId = this.skus.find( item => {
-        return item.attrbute == label
+        return item.attrbute === label
       }).skuId
     }
   },

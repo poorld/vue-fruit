@@ -30,3 +30,20 @@ export function deleteDiscounts(data) {
     method: 'delete'
   })
 }
+
+
+export function getUserDiscounts(data) {
+  return apiFruitService({
+    url: '/fruit/discounts/user',
+    method: 'get',
+    data
+  })
+}
+
+export function getMemberDiscounts(data) {
+  return apiFruitService({
+    url: '/fruit/discounts/member',
+    method: 'get',
+    data
+  })
+}

@@ -145,19 +145,22 @@ mockService.interceptors.response.use(
 apiFruitService.interceptors.request.use(
   config => {
     console.log(config, 'config')
-    if (config.method === "post") {
-      let curPost = config.url.split("/")[config.url.split("/").length - 1]
-      if (curPost === "upload" || curPost === "multipleFiles") {
-        return config // 这里对上传文件/图片的 api 不做传参序列化处理
-      } else {
-        config.data = JSON.stringify(config.data)
-        console.error(config.data, 'data')
-        // config.headers = {
-        //   'Content-Type': 'application/json; charset=UTF-8'
-        // }
-        return config
-      }
-    }
+    // if (config.method === "post") {
+    //   let curPost = config.url.split("/")[config.url.split("/").length - 1]
+    //   if (curPost === "upload" || curPost === "multipleFiles") {
+    //     config.headers = {
+    //       'Content-type': 'multipart/form-data'
+    //     }
+    //     return config // 这里对上传文件/图片的 api 不做传参序列化处理
+    //   } else {
+    //     config.data = JSON.stringify(config.data)
+    //     console.error(config.data, 'data')
+    //     // config.headers = {
+    //     //   'Content-Type': 'application/json; charset=UTF-8'
+    //     // }
+    //     return config
+    //   }
+    // }
     return config
   },
   error => {
