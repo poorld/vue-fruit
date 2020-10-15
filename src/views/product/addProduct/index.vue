@@ -337,7 +337,7 @@ export default {
       // 推荐
       checked: true
 
-    };
+    }
   },
   components: {
     EditTag,
@@ -434,23 +434,20 @@ export default {
     },
 
     add() {
+      let banners,infos, dis,tags
+      banners = infos = dis = tags  = []
+
+      this.bannerImageList.forEach(item => banners.push({url: item.response.data.fileDownloadUrl}))
+      this.infoImageList.forEach(item => infos.push({url: item.response.data.fileDownloadUrl}))
+      let discounts = [...this.checkMDiscountList, ...this.checkUDiscountList]
+      discounts.forEach(item => dis.push({discountsId: item}))
+      this.checkTagList.forEach(item => tags.push({tagId: item}))
+
       this.form.spec = Object.assign(this.form.spec, this.dynamicTags)
-      let banners = []
-      let infos = []
-      this.bannerImageList.forEach(item => {
-        let banner = {
-          url: item.response.data.fileDownloadUrl
-        }
-        banners.push(banner)
-      })
-      this.infoImageList.forEach(item => {
-        let info = {
-          url: item.response.data.fileDownloadUrl
-        }
-        infos.push(info)
-      })
       this.form.productBannerImages = Object.assign(this.form.productBannerImages, banners)
       this.form.productInfoImages = Object.assign(this.form.productInfoImages, infos)
+      this.form.discounts = Object.assign(this.form.discounts, dis)
+      this.form.tags = Object.assign(this.form.tags, tags)
       console.log(this.form)
     },
 
