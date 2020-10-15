@@ -1,5 +1,4 @@
 // 公共api
-
 import {apiFruitService} from '@/utils/request'
 
 // 上传单个文件夹

@@ -12,7 +12,6 @@
 
     <el-button class="button-new-tag" size="small" @click="showInput">+ 添加规格</el-button>
 
-
     <el-dialog
       title="添加规格"
       :visible.sync="centerDialogVisible"
@@ -56,7 +55,7 @@
 </template>
 
 <script>
-import { confirm, success, info, dialogInput } from '@/utils/dialog'
+import { confirm, success, info } from '@/utils/dialog'
 import { getSku } from '@/api/sku'
 
 export default {
@@ -75,12 +74,12 @@ export default {
       skus: [],
       centerDialogVisible: false,
       spec: {
-        specName:'',
+        specName: '',
         price: '',
         quantity: '',
-        sku:{
-            skuId: '',
-            attrbute:''
+        sku: {
+          skuId: '',
+          attrbute: ''
         }
       },
       rules: {
@@ -155,13 +154,13 @@ export default {
           this.$emit('onInsertTag', JSON.parse(JSON.stringify(this.spec)))
           this.centerDialogVisible = false
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
       });
     },
     resetForm(formName) {
-      this.$refs[formName].resetFields();
+      this.$refs[formName].resetFields()
     },
 
     skuChange(label) {

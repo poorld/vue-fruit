@@ -1,3 +1,26 @@
+//                    _oo0oo_
+//                   o8888888o
+//                   88" . "88
+//                   (| -_- |)
+//                   0\  =  /0
+//                 ___/`---'\___
+//               .' \\|     |// '.
+//              / \\|||  :  |||// \
+//             / _||||| -:- |||||- \
+//            |   | \\\  -  /// |   |
+//            | \_|  ''\---/''  |_/ |
+//            \  .-\__  '-'  ___/-. /
+//          ___'. .'  /--.--\  `. .'___
+//       ."" '<  `.___\_<|>_/___.' >' "".
+//      | | :  `- \`.;`\ _ /`;.`/ - ` : | |
+//      \  \ `_.   \_ __\ /__ _/   .-` /  /
+//  =====`-.____`.___ \_____/___.-`___.-'=====
+//                    `=---='
+
+
+//  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//             菩提本无树      明镜亦非台
+//             本来无BUG      何必常修改
 <template>
   <div class="app-container">
     <!-- <div class="box info-base">
@@ -23,7 +46,7 @@
           </el-form-item>
           <el-form-item label="商品分类">
             <el-select
-              v-model="form.productCategoryId"
+              v-model="form.productCategory.productCategoryId"
               placeholder="请选择商品分类"
             >
               <el-option
@@ -247,20 +270,33 @@ import { uploadImage } from '@/api/common'
 import { getCategory } from '@/api/category'
 import { getUserDiscounts, getMemberDiscounts } from '@/api/discounts'
 import { getTags } from '@/api/tag'
+import { info } from '@/utils/dialog'
 export default {
   data() {
     return {
-      productCategory: [],
       form: {
         name: '',
-        productCategoryId: '',
+        productCategory: {
+          productCategoryId: ''
+        },
         explain: '',
         shopPrice: '',
         price: '',
 
+        spec: [],
+
         // 封面
         defaultImg: '',
-        productBannerImages: []
+        // 商品幻灯片 与bannerImageList关联
+        productBannerImages: [],
+        // 商品介绍 与infoImageList管理
+        productInfoImages: [],
+
+        // 优惠
+        discounts: [],
+
+        // 标签
+        tags: []
 
       },
       // 商品封面
@@ -288,12 +324,15 @@ export default {
       checkUDiscountList: [],
       // 选中标签
       checkTagList: [],
+
       // 会员优惠列表
       memberDiscounts: [],
       // 用户优惠列表
       userDiscounts: [],
       // 标签列表
       tags: [],
+      // 分类
+      productCategory: [],
 
       // 推荐
       checked: true
@@ -395,9 +434,24 @@ export default {
     },
 
     add() {
-      console.log(this.checkMDiscountList)
-      console.log(this.checkUDiscountList)
-      console.log(this.checkTagList)
+      this.form.spec = Object.assign(this.form.spec, this.dynamicTags)
+      let banners = []
+      let infos = []
+      this.bannerImageList.forEach(item => {
+        let banner = {
+          url: item.response.data.fileDownloadUrl
+        }
+        banners.push(banner)
+      })
+      this.infoImageList.forEach(item => {
+        let info = {
+          url: item.response.data.fileDownloadUrl
+        }
+        infos.push(info)
+      })
+      this.form.productBannerImages = Object.assign(this.form.productBannerImages, banners)
+      this.form.productInfoImages = Object.assign(this.form.productInfoImages, infos)
+      console.log(this.form)
     },
 
     initData() {
@@ -424,7 +478,7 @@ export default {
   created() {
     this.initData()
   }
-};
+}
 </script>
 
 <style scoped>
