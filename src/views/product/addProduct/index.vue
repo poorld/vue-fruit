@@ -271,6 +271,7 @@ import { getCategory } from '@/api/category'
 import { getUserDiscounts, getMemberDiscounts } from '@/api/discounts'
 import { getTags } from '@/api/tag'
 import { info } from '@/utils/dialog'
+import { addProduct } from '@/api/product'
 export default {
   data() {
     return {
@@ -434,21 +435,27 @@ export default {
     },
 
     add() {
-      let banners,infos, dis,tags
-      banners = infos = dis = tags  = []
+      let banners = [], infos = [], dis = [], tags = []
 
-      this.bannerImageList.forEach(item => banners.push({url: item.response.data.fileDownloadUrl}))
-      this.infoImageList.forEach(item => infos.push({url: item.response.data.fileDownloadUrl}))
+      this.bannerImageList.forEach(bannerItem => banners.push({url: bannerItem.response.data.fileDownloadUrl}))
+      this.infoImageList.forEach(infoItem => infos.push({url: infoItem.response.data.fileDownloadUrl}))
       let discounts = [...this.checkMDiscountList, ...this.checkUDiscountList]
-      discounts.forEach(item => dis.push({discountsId: item}))
-      this.checkTagList.forEach(item => tags.push({tagId: item}))
+      discounts.forEach(disItem => dis.push({discountsId: disItem}))
+      this.checkTagList.forEach(tagItem => tags.push({tagId: tagItem}))
 
       this.form.spec = Object.assign(this.form.spec, this.dynamicTags)
       this.form.productBannerImages = Object.assign(this.form.productBannerImages, banners)
       this.form.productInfoImages = Object.assign(this.form.productInfoImages, infos)
       this.form.discounts = Object.assign(this.form.discounts, dis)
       this.form.tags = Object.assign(this.form.tags, tags)
+
+      // this.form.spec = JSON.parse(JSON.stringify(this.dynamicTags))
+      // this.form.productBannerImages = JSON.parse(JSON.stringify(banners))
+      // this.form.productInfoImages = JSON.parse(JSON.stringify(infos))
+      // this.form.discounts = JSON.parse(JSON.stringify(dis))
+      // this.form.tags = JSON.parse(JSON.stringify(tags))
       console.log(this.form)
+      addProduct(this.form)
     },
 
     initData() {

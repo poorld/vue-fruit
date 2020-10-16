@@ -22,7 +22,7 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="explain"
+        prop="discountsExplain"
         label="优惠说明">
       </el-table-column>
       <el-table-column

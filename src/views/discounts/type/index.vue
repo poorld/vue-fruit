@@ -15,7 +15,7 @@
         width="180">
       </el-table-column>
       <el-table-column
-        prop="description"
+        prop="discountsDescription"
         label="说明">
       </el-table-column>
 
