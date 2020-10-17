@@ -38,8 +38,8 @@
 
       <el-table-column type="expand">
         <template slot-scope="props">
-
           <div class="status">
+            <span>上线板块</span>
             <el-tag>新品上市</el-tag>
             <el-tag type="success">热销水果</el-tag>
             <!-- <el-tag type="info">标签三</el-tag> -->
@@ -83,6 +83,13 @@
 
             <el-form-item label="创建时间">
               <span>2009-01-30 12:02:52</span>
+            </el-form-item>
+
+            <el-form-item label="携带标签">
+              <span class="tag">产地直销</span>
+              <span class="tag">限时优惠</span>
+              <span class="tag">店长推荐</span>
+              <span class="tag">新鲜时蔬</span>
             </el-form-item>
 
             <!-- <el-image
@@ -284,5 +291,13 @@ export default {
   .fruit-setting {
     text-align: left;
     margin: 15px 0;
+  }
+
+  .tag {
+    background-color: #ffe98a;
+    color: #888888;
+    padding: 2px 5px;
+    border-radius: 3px;
+    margin-right: 3px;
   }
 </style>

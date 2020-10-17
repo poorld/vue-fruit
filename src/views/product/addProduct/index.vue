@@ -395,27 +395,20 @@ export default {
     },
 
     // 编辑
-    onEditTag(item, value, index) {
-      console.log(item, value);
-      if (value) {
-        item.name = value;
-        updateCategory(item).then((res) => {
-          this.dynamicTags.splice(index, 1, res)
-        });
-      }
+    onEditTag(item, index) {
+      console.log(item, index)
+      this.dynamicTags.splice(index, 1, item)
     },
 
     // 删除
     onDeleteTag(item, index) {
       console.log(item);
-      deleteCategory(item).then((res) => {
-        this.dynamicTags.splice(index, 1);
-      });
+      this.dynamicTags.splice(index, 1)
     },
 
     // 添加
     onInsertTag(value) {
-      console.log("onInsertTag", value);
+      console.log("onInsertTag", value)
       this.dynamicTags.push(value)
       // addCategory({ name: value }).then((res) => {
       //   this.dynamicTags.push(res)

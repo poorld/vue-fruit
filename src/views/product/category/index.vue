@@ -43,7 +43,7 @@ export default {
         item.name = value
         updateCategory(item)
           .then(res => {
-            this.dynamicTags.splice(index, 1, res.data)
+            this.dynamicTags.splice(index, 1, res)
           })
       }
     },
@@ -62,7 +62,7 @@ export default {
       console.log('onInsertTag', value)
       addCategory({ 'name': value } )
         .then(res => {
-          this.dynamicTags.push(res.data)
+          this.dynamicTags.push(res)
         })
     }
   },
@@ -70,7 +70,7 @@ export default {
   created() {
     getCategory()
       .then(res => {
-        this.dynamicTags = res.data
+        this.dynamicTags = res
       })
   },
 

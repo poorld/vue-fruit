@@ -10,7 +10,7 @@
       </el-tooltip>
     </div>
 
-    <el-button class="button-new-tag" size="small" @click="showInput">+ 添加规格</el-button>
+    <el-button class="button-new-tag" size="small" @click="insertSpec">+ 添加规格</el-button>
 
     <el-dialog
       title="添加规格"
@@ -73,6 +73,8 @@ export default {
     return {
       skus: [],
       centerDialogVisible: false,
+      index: -1,
+      update: false,
       spec: {
         specName: '',
         price: '',
@@ -103,7 +105,10 @@ export default {
   },
   methods: {
     editTag(item, index) {
-
+      this.index = index
+      this.update = true
+      Object.assign(this.spec, item)
+      this.centerDialogVisible = true
       // dialogInput('提示', '编辑标签', item.name)
       //   .then(({ value }) => {
       //     this.$emit('onEditTag', item, value, index)
@@ -121,7 +126,7 @@ export default {
       //   })
     },
     removeTag(item, index) {
-      confirm('提示', `确定要删除分类[${item.name}]吗?`)
+      confirm('提示', `确定要删除规格[${item.specName}]吗?`)
         .then(() => {
           this.$emit('onDeleteTag', item, index)
         })
@@ -133,11 +138,12 @@ export default {
       this.tagList.splice(this.tagList.indexOf(tag), 1);
     },
 
-    showInput() {
+    insertSpec() {
       // this.inputVisible = true;
       // this.$nextTick(_ => {
       //   this.$refs.saveTagInput.$refs.input.focus();
       // });
+      this.update = false
       this.centerDialogVisible = true
     },
 
@@ -149,9 +155,14 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          // this.$emit('onInsertTag', Object.assign({}, this.spec))
-          // 简单粗暴的对象深拷贝
-          this.$emit('onInsertTag', JSON.parse(JSON.stringify(this.spec)))
+          if(this.update) {
+            console.log(this.index);
+            this.$emit('onEditTag', JSON.parse(JSON.stringify(this.spec)), this.index)
+          } else {
+            // this.$emit('onInsertTag', Object.assign({}, this.spec))
+            // 简单粗暴的对象深拷贝
+            this.$emit('onInsertTag', JSON.parse(JSON.stringify(this.spec)))
+          }
           this.centerDialogVisible = false
         } else {
           console.log('error submit!!')
