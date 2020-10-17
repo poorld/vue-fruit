@@ -88,6 +88,12 @@ export const constantRoutes = [
         component: () => import('@/views/product/addProduct/index'),
         meta: { title: '添加商品', icon: 'tree' },
         hidden: true
+      },
+      {
+        path: 'productInfo',
+        name: '商品详情',
+        component: () => import('@/views/product/info/index'),
+        meta: { title: '添加商品', icon: 'tree' },
       }
     ]
   },
