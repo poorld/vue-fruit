@@ -158,7 +158,8 @@
               ghost-class="ghost"
               :animation="200"
               @start="dragging = true"
-              @end="dragging = false">
+              @end="dragging = false"
+            >
               <div
                 class="list-group-item item"
                 v-for="(url, index) in list"
@@ -174,8 +175,16 @@
                 <span class="img-order">排序序号：{{ index }}</span>
 
                 <div style="flex: 1;text-align: right;">
-                  <el-button type="warning" size="mini" round>修改图片</el-button>
-                  <el-button type="danger" size="mini" round>删除图片</el-button>
+                  <el-button
+                    type="warning"
+                    size="mini"
+                    round
+                  >修改图片</el-button>
+                  <el-button
+                    type="danger"
+                    size="mini"
+                    round
+                  >删除图片</el-button>
                 </div>
               </div>
               <div
@@ -186,29 +195,103 @@
                 key="footer"
                 style="text-align: right;margin: 30px 0px;"
               >
-                <el-button type="success" size="mini" round>添加图片</el-button>
-                <el-button type="primary" size="mini" round>保存序号</el-button>
+                <el-button
+                  type="success"
+                  size="mini"
+                  round
+                >添加图片</el-button>
+                <el-button
+                  type="primary"
+                  size="mini"
+                  round
+                >保存序号</el-button>
               </div>
             </draggable>
           </el-card>
         </el-tab-pane>
 
         <el-tab-pane
-          label="角色管理"
+          label="用户优惠"
           name="third"
-        >角色管理</el-tab-pane>
+        >
+          <!-- <el-transfer v-model="memberDiscountsValue" :data="memberDiscounts"></el-transfer> -->
+          <el-transfer
+            v-model="memberDiscountsValue"
+            :data="memberDiscounts"
+            :titles="['已参与优惠', '未参与优惠']"
+            :button-texts="['参与优惠', '取消优惠']"
+          >
+            <span slot-scope="{ option }">{{ option.label }}
+            </span>
+          </el-transfer>
+        </el-tab-pane>
         <el-tab-pane
-          label="定时任务补偿"
+          label="会员优惠"
           name="fourth"
-        >定时任务补偿</el-tab-pane>
+        >
+          <el-transfer
+            v-model="memberDiscountsValue"
+            :data="memberDiscounts"
+            :titles="['已参与优惠', '未参与优惠']"
+            :button-texts="['参与优惠', '取消优惠']"
+          >
+            <span slot-scope="{ option }">{{ option.label }}
+            </span>
+          </el-transfer>
+        </el-tab-pane>
       </el-tabs>
-
     </div>
+
+
+
+    <el-row>
+      <el-card class="box-card">
+        <el-collapse v-model="activeNames">
+          <el-collapse-item
+            title="展示标签"
+            name="1"
+          >
+            <div class="text">
+              <span class="item-title">是否在封面添加推荐标签</span>
+              <br />
+              <el-checkbox v-model="checked">推荐</el-checkbox>
+            </div>
+
+            <div class="text">
+              <span class="item-title">商品携带标签</span>
+              <el-checkbox-group v-model="checkTagList">
+                <el-checkbox
+                  v-for="item in tags"
+                  :key="item.tagId"
+                  :label="item.tagId"
+                >
+                  {{item.name}}
+                </el-checkbox>
+              </el-checkbox-group>
+
+            </div>
+          </el-collapse-item>
+          <el-collapse-item
+            title="上线板块"
+            name="3"
+          >
+            <div><svg-icon icon-class="tick" />新品上市：设计简洁直观的操作流程；</div>
+            <div><svg-icon icon-class="tick" />热销水果：语言表达清晰且表意明确，让用户快速理解进而作出决策；</div>
+            <div>限时抢购：界面简单直白，让用户快速识别而非回忆，减少用户记忆负担。</div>
+            <div>每日精选：设计简洁直观的操作流程；</div>
+
+          </el-collapse-item>
+        </el-collapse>
+      </el-card>
+    </el-row>
+
   </div>
 </template>
 
 <script>
 import draggable from "vuedraggable";
+import { getUserDiscounts, getMemberDiscounts } from "@/api/discounts";
+import { getTags } from "@/api/tag";
 
 export default {
   name: "footerslot",
@@ -217,7 +300,15 @@ export default {
   data() {
     return {
       currentDate: new Date(),
+      memberDiscounts: [],
+      memberDiscountsValue: [],
+      userDiscounts: [],
+      tags: [],
+      activeNames: ['1'],
+      checked: false,
+      checkTagList: [],
       bannerCount: 5,
+      checkMDiscountList: [],
       bannerList: ["无幻灯片，请添加", "无幻灯片，请添加", "无幻灯片，请添加"],
       list: [
         {
@@ -294,6 +385,10 @@ export default {
       ];
     },
 
+    // renderFunc(h, option) {
+    //   return <span>{ option.discountsExplain } - { option.discountsExplain }</span>;
+    // },
+
     onChange(index) {},
 
     editTag(item, index) {},
@@ -318,7 +413,7 @@ export default {
       console.log(tab, event);
     },
     handleChange() {
-      console.log('changed');
+      console.log("changed");
     },
     inputChanged(value) {
       this.activeNames = value;
@@ -327,182 +422,209 @@ export default {
       return {
         on: {
           change: this.handleChange,
-          input: this.inputChanged
+          input: this.inputChanged,
         },
-        attrs:{
-          wrap: true
+        attrs: {
+          wrap: true,
         },
         props: {
-          value: this.activeNames
-        }
+          value: this.activeNames,
+        },
+      };
+    },
+
+    initData() {
+      // getCategory()
+      //   .then(data => {
+      //     this.productCategory = data
+      //   })
+      const banners = this.ajaxGetBanner();
+      const length = this.bannerCount - banners.length;
+      // 幻灯片数量不足用文字代替图片
+      // console.log(length)
+      for (let i = 0; i < length; i++) {
+        banners.push("无幻灯片，请添加");
       }
-    }
+      this.bannerList = banners;
+
+      getMemberDiscounts().then((data) => {
+        // this.memberDiscounts = data
+        let gg = [];
+        data.forEach((element) => {
+          gg.push({
+            key: element.discountsId,
+            label: element.discountsExplain,
+            id: element.discountsId,
+          });
+        });
+        this.memberDiscounts = gg;
+      });
+      getUserDiscounts().then((data) => {
+        this.userDiscounts = data;
+      });
+      getTags().then((data) => {
+        this.tags = data;
+      });
+    },
   },
 
   created() {
-    const banners = this.ajaxGetBanner();
-    const length = this.bannerCount - banners.length;
-    // 幻灯片数量不足用文字代替图片
-    // console.log(length)
-    for (let i = 0; i < length; i++) {
-      banners.push("无幻灯片，请添加");
-    }
-    this.bannerList = banners;
+    this.initData();
   },
 
   components: {
     draggable,
   },
-}
+};
 </script>
 
 <style scoped>
-  .time {
-    font-size: 13px;
-    color: #999;
-  }
+.time {
+  font-size: 13px;
+  color: #999;
+}
 
-  .bottom {
-    margin-top: 13px;
-    line-height: 12px;
-  }
+.bottom {
+  margin-top: 13px;
+  line-height: 12px;
+}
 
-  .button {
-    padding: 0;
-    float: right;
-  }
+.button {
+  padding: 0;
+  float: right;
+}
 
-  .image {
-    width: 100%;
-    display: block;
-  }
+.image {
+  width: 100%;
+  display: block;
+}
 
-  .clearfix:before,
-  .clearfix:after {
-    display: table;
-    content: "";
-  }
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+}
 
-  .clearfix:after {
-    clear: both;
-  }
+.clearfix:after {
+  clear: both;
+}
 
-  .el-carousel__item h3 {
-    color: #475669;
-    font-size: 14px;
-    opacity: 0.75;
-    line-height: 300px;
-    margin: 0;
-    text-align: center;
-  }
+.el-carousel__item h3 {
+  color: #475669;
+  font-size: 14px;
+  opacity: 0.75;
+  line-height: 300px;
+  margin: 0;
+  text-align: center;
+}
 
-  .el-carousel__item:nth-child(2n) {
-    background-color: #99a9bf;
-  }
+.el-carousel__item:nth-child(2n) {
+  background-color: #99a9bf;
+}
 
-  .el-carousel__item:nth-child(2n + 1) {
-    background-color: #d3dce6;
-  }
+.el-carousel__item:nth-child(2n + 1) {
+  background-color: #d3dce6;
+}
 
-  .price {
-    float: right;
-  }
-  .price span:nth-child(1) {
-    text-decoration: line-through;
-    font-size: 13px;
-    color: #adadad;
-  }
-  .price span:nth-child(2) {
-    font-size: 19px;
-    color: #ff5353;
-    margin-left: 10px;
-  }
+.price {
+  float: right;
+}
+.price span:nth-child(1) {
+  text-decoration: line-through;
+  font-size: 13px;
+  color: #adadad;
+}
+.price span:nth-child(2) {
+  font-size: 19px;
+  color: #ff5353;
+  margin-left: 10px;
+}
 
-  .el-icon-edit {
-    border-radius: 50%;
-    text-align: center;
-    position: relative;
-    cursor: pointer;
-    font-size: 12px;
-    height: 16px;
-    width: 16px;
-    line-height: 16px;
-    vertical-align: middle;
-    top: -1px;
-    right: -5px;
-  }
+.el-icon-edit {
+  border-radius: 50%;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+  font-size: 12px;
+  height: 16px;
+  width: 16px;
+  line-height: 16px;
+  vertical-align: middle;
+  top: -1px;
+  right: -5px;
+}
 
-  .el-tag__edit:hover {
-    color: #fff;
-    background-color: #409eff;
-  }
-  .el-tag + .el-tag {
-    margin-left: 10px;
-  }
+.el-tag__edit:hover {
+  color: #fff;
+  background-color: #409eff;
+}
+.el-tag + .el-tag {
+  margin-left: 10px;
+}
 
-  .button {
-    margin-top: 35px;
-  }
-  .handle {
-    float: left;
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
-  .close {
-    float: right;
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
-  input {
-    display: inline-block;
-    width: 50%;
-  }
-  .text {
-    margin: 20px;
-  }
-  .item {
-    border: 1px solid #eee;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    color: #6d6d6d;
-    font-size: 13px;
-  }
-  .item-box {
-    padding: 30px;
-    margin-top: 15px;
-    font-size: 15px;
-    /* box-shadow: 0 0 5px rgba(202, 203, 203, 0.5);
+.button {
+  margin-top: 35px;
+}
+.handle {
+  float: left;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.close {
+  float: right;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+input {
+  display: inline-block;
+  width: 50%;
+}
+.text {
+  margin: 20px;
+}
+.item {
+  border: 1px solid #eee;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: #6d6d6d;
+  font-size: 13px;
+}
+.item-box {
+  padding: 30px;
+  margin-top: 15px;
+  font-size: 15px;
+  /* box-shadow: 0 0 5px rgba(202, 203, 203, 0.5);
     -webkit-box-shadow: 0 0 5px rgba(202, 203, 203, 0.5);
     -moz-box-shadow: 0 0 5px rgba(202, 203, 204, 0.5); */
-  }
+}
 
-  /* .item-box:hover {
+/* .item-box:hover {
     box-shadow: 0 0 5px #0091ff;
     -webkit-box-shadow: 0 0 5px #0091ff;
     -moz-box-shadow: 0 0 5px #0091ff;
   } */
 
-  .ghost {
-    opacity: 0.5;
-    background: #c8ebfb;
-  }
+.ghost {
+  opacity: 0.5;
+  background: #c8ebfb;
+}
 
-  .demo-image__lazy {
-    height: 400px;
-    overflow-y: auto;
-  }
+.demo-image__lazy {
+  height: 400px;
+  overflow-y: auto;
+}
 
-  #info-img {
-    text-align: center;
-  }
-  .flip-list-move {
-    transition: transform 0.5s;
-  }
-  .no-move {
-    transition: transform 0s;
-  }
-  .img-order {
-    margin-left: 30px;
-  }
+#info-img {
+  text-align: center;
+}
+.flip-list-move {
+  transition: transform 0.5s;
+}
+.no-move {
+  transition: transform 0s;
+}
+.img-order {
+  margin-left: 30px;
+}
 </style>
