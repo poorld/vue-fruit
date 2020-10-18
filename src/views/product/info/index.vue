@@ -44,20 +44,116 @@
         <el-col :span="8">
           <el-card shadow="hover">
             商品分类: <el-tag type="success">标签二</el-tag>
+            <!-- <el-button type="text" class="button" style="line-height: 32px;">更改</el-button> -->
+          </el-card>
+        </el-col>
+
+        <el-col :span="15" :offset="1">
+          <el-card shadow="hover">
+            商品规格:
+            <el-tooltip class="item" effect="dark" content="specContent" placement="top">
+              <span class="el-tag el-tag--light">
+                小果（斤）
+                <i class="el-icon-edit el-tag__edit" v-on:click="editTag(item, index)"></i>
+                <i class="el-tag__close el-icon-close" v-on:click="removeTag(item, index)"></i>
+              </span>
+            </el-tooltip>
+
+            <el-tooltip class="item" effect="dark" content="specContent" placement="top">
+              <span class="el-tag el-tag--light">
+                中果（斤）
+                <i class="el-icon-edit el-tag__edit" v-on:click="editTag(item, index)"></i>
+                <i class="el-tag__close el-icon-close" v-on:click="removeTag(item, index)"></i>
+              </span>
+            </el-tooltip>
           </el-card>
         </el-col>
       </el-row>
+    </div>
+
+    <div class="item-box" style="min-height: 500px;">
+
+       <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+        <el-tab-pane label="商品介绍" name="first">
+          <div class="demo-image__lazy" >
+            <el-image v-for="url in urls" :key="url" :src="url"></el-image>
+          </div>
+        </el-tab-pane>
+
+        <el-tab-pane label="图片编辑" name="second">
+          <el-card shadow="hover">
+            <draggable
+              tag="transition-group"
+              :componentData="componentData"
+              :list="list"
+              class="list-group"
+              draggable=".item"
+              :animation="100"
+              @start="dragging = true"
+              @end="dragging = false"
+            >
+                <div v-for="url in urls" :key="url" class="item">
+                    <el-image
+                      style="width: 100px; height: 100px"
+                      :src="url"
+                      fit="fill">
+                    </el-image>
+                </div>
+                <div
+              slot="footer"
+              class="btn-group list-group-item"
+              role="group"
+              aria-label="Basic example"
+              key="footer"
+            >
+          <button class="btn btn-secondary" @click="add">Add</button>
+                </div>
+            </draggable>
+          </el-card>
+        </el-tab-pane>
+
+        <el-tab-pane label="角色管理" name="third">角色管理</el-tab-pane>
+        <el-tab-pane label="定时任务补偿" name="fourth">定时任务补偿</el-tab-pane>
+      </el-tabs>
+
     </div>
   </div>
 </template>
 
 <script>
+  import draggable from 'vuedraggable'
+
 export default {
+  name: "footerslot",
+  display: "Footer slot",
+  order: 5,
   data() {
     return {
       currentDate: new Date(),
       bannerCount: 5,
       bannerList: ['无幻灯片，请添加', '无幻灯片，请添加', '无幻灯片，请添加'],
+      list: [
+        { name: "John", text: "", id: 0 , img: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png'},
+        { name: "Joao", text: "", id: 1 , img: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png'},
+        { name: "Jean", text: "", id: 2 , img: 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png'}
+      ],
+      dragging: false,
+      activeName: 'first',
+      urls: [
+        'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
+        'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
+        // 'https://fuss10.elemecdn.com/0/6f/e35ff375812e6b0020b6b4e8f9583jpeg.jpeg',
+        'https://fuss10.elemecdn.com/9/bb/e27858e973f5d7d3904835f46abbdjpeg.jpeg',
+        'https://fuss10.elemecdn.com/d/e6/c4d93a3805b3ce3f323f7974e6f78jpeg.jpeg',
+        'https://fuss10.elemecdn.com/3/28/bbf893f792f03a54408b3b7a7ebf0jpeg.jpeg',
+        'https://fuss10.elemecdn.com/2/11/6535bcfb26e4c79b48ddde44f4b6fjpeg.jpeg'
+      ],
+      componentData: {
+        props: {
+          type: "transition",
+          name: "flip-list"
+        }
+      }
     }
   },
   methods: {
@@ -72,7 +168,34 @@ export default {
     },
 
     onChange(index) {
+    },
+
+    editTag(item, index) {
+
+    },
+
+    removeTag(item, index) {
+
+    },
+
+    removeAt(idx) {
+      this.urls.splice(idx, 1);
+    },
+    add: function() {
+      // this.urls.push({ name: "Juan " + id, id: id++ })
+    },
+    replace: function() {
+      this.urls = ['https://fuss10.elemecdn.com/0/6f/e35ff375812e6b0020b6b4e8f9583jpeg.jpeg']
+    },
+
+    addBanner() {
+
+    },
+
+    handleClick(tab, event) {
+      console.log(tab, event);
     }
+
   },
 
   created() {
@@ -84,15 +207,16 @@ export default {
       banners.push('无幻灯片，请添加')
     }
     this.bannerList = banners
-  }
+  },
+
+  components: {
+    draggable
+  },
 }
 </script>
 
 <style scoped>
-  .item-box {
-    margin-top: 15px;
-    font-size: 15px;
-  }
+
   .time {
     font-size: 13px;
     color: #999;
@@ -152,5 +276,84 @@ export default {
     font-size: 19px;
     color: #ff5353;
     margin-left: 10px;
+  }
+
+  .el-icon-edit {
+    border-radius: 50%;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    font-size: 12px;
+    height: 16px;
+    width: 16px;
+    line-height: 16px;
+    vertical-align: middle;
+    top: -1px;
+    right: -5px;
+  }
+
+  .el-tag__edit:hover {
+    color: #FFF;
+    background-color: #409eff;
+  }
+  .el-tag + .el-tag {
+    margin-left: 10px;
+  }
+
+  .button {
+    margin-top: 35px;
+  }
+  .handle {
+    float: left;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  .close {
+    float: right;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  input {
+    display: inline-block;
+    width: 50%;
+  }
+  .text {
+    margin: 20px;
+  }
+  .item {
+    border: 1px solid #eee;
+  }
+  .item-box {
+    padding: 30px;
+    margin-top: 15px;
+    font-size: 15px;
+    box-shadow: 0 0 5px rgba(202,203,203,0.5);
+    -webkit-box-shadow: 0 0 5px rgba(202,203,203,0.5);
+    -moz-box-shadow: 0 0 5px rgba(202,203,204,0.5);
+  }
+
+  .item-box:hover {
+    box-shadow: 0 0 5px #0091FF;
+    -webkit-box-shadow: 0 0 5px #0091FF;
+    -moz-box-shadow: 0 0 5px #0091FF;
+  }
+  .ghost {
+    opacity: 0.5;
+    background: #c8ebfb;
+  }
+
+  .demo-image__lazy {
+    height: 400px;
+    overflow-y: auto;
+  }
+
+  #info-img {
+    text-align: center;
+  }
+  .flip-list-move {
+    transition: transform 0.5s;
+  }
+  .no-move {
+    transition: transform 0s;
   }
 </style>
