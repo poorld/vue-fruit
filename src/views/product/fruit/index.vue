@@ -245,13 +245,19 @@ export default {
   methods: {
     fetchData() {
       this.listLoading = true
+      let formData = {
+        name: '',
+        categories: [],
+        status: 0
+      }
       getCategory().then(data => {
         this.categorys = data
       })
-      getProducts().then(data => {
-        this.list = data
-        this.listLoading = false
-      })
+      getProductByQuery(formData)
+        .then(data => {
+          this.list = data
+          this.listLoading = false
+        })
     },
 
     handleCheckAllChange(val) {
