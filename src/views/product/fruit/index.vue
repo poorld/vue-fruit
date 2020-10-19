@@ -122,7 +122,7 @@
               <svg-icon icon-class="fruit_choiceness" />关联幻灯片
             </el-button>
 
-            <el-button type="danger" size="mini" style="float: right;">
+            <el-button type="danger" size="mini" style="float: right;" @click="toProductInfo(props.row.productId)">
               查看详情
             </el-button>
           </el-row>
@@ -270,11 +270,26 @@ export default {
       this.isIndeterminate = checkedCount > 0 && checkedCount < this.categorys.length
     },
 
+    /**
+     * 添加商品
+     */
     addProduct() {
       this.$router.push('/product/addProduct')
     },
 
+    /**
+     * 查看产品详情
+     */
+    toProductInfo(productId) {
+      this.$router.push(`/product/productInfo/${productId}`)
+    },
+
+    /**
+     * 搜索
+     */
     search() {
+      // 构造表单数据
+
       let categorys = []
       // 查询对象
       let formData = {
@@ -284,31 +299,28 @@ export default {
       }
 
       this.listLoading = true
-      console.log(this.checkedCategory)
 
-      if (this.checkAll || this.checkedCategory.length === 0) {
-        getProducts().then(data => {
+      const checkedLength =  this.checkedCategory.length
+      // 把全选或者不选都归为 获取全部分类
+      if ( checkedLength > 0 && checkedLength < this.categorys.length) {
+        this.checkedCategory.forEach(item => categorys.push({'productCategoryId': item}))
+        formData.categories = categorys
+      }
+
+      if ('' != this.input.trim()) {
+        formData.name = this.input
+      }
+
+      if ('' != this.select) {
+        formData.status = this.select
+      }
+
+      getProductByQuery(formData)
+        .then(data => {
           this.list = data
           this.listLoading = false
         })
-      } else {
-        this.checkedCategory.forEach(item => categorys.push({'productCategoryId': item}))
-        if ('' != this.input.trim()) {
-          formData.name = this.input
-        }
 
-        if ('' != this.select) {
-          formData.status = this.select
-        }
-
-        formData.categories = categorys
-
-        getProductByQuery(formData)
-          .then(data => {
-            this.list = data
-            this.listLoading = false
-          })
-      }
     }
 
   },

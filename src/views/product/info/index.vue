@@ -10,10 +10,10 @@
               class="image"
             >
             <div style="padding: 14px;">
-              <span>好吃的汉堡</span>
+              <span>{{ product.name }}</span>
               <span class="price">
-                <span>23.5</span>
-                <span>13.8</span>
+                <span>{{ product.name }}</span>
+                <span>{{ product.name }}</span>
               </span>
               <div class="bottom clearfix">
                 <time class="time">好吃的汉堡描述商品描述好吃的汉堡描述商品描述...</time>
@@ -287,18 +287,21 @@
 </template>
 
 <script>
-import draggable from "vuedraggable";
-import { getUserDiscounts, getMemberDiscounts } from "@/api/discounts";
-import { getTags } from "@/api/tag";
+import draggable from 'vuedraggable'
+import { getUserDiscounts, getMemberDiscounts } from '@/api/discounts'
+import { getTags } from '@/api/tag'
+import { Loading } from 'element-ui'
+import { getProductById } from '@/api/product'
 
 export default {
-  name: "footerslot",
-  display: "Footer slot",
+  name: 'footerslot',
+  display: 'Footer slot',
   order: 5,
   data() {
     return {
       enabled: true,
       currentDate: new Date(),
+      product: {},
       memberDiscounts: [],
       memberDiscountsValue: [],
       userDiscounts: [],
@@ -308,7 +311,7 @@ export default {
       checkTagList: [],
       bannerCount: 5,
       checkMDiscountList: [],
-      bannerList: ["无幻灯片，请添加", "无幻灯片，请添加", "无幻灯片，请添加"],
+      bannerList: ['无幻灯片，请添加', '无幻灯片，请添加', '无幻灯片，请添加'],
       list: [
         {
           order: 0,
@@ -431,11 +434,22 @@ export default {
     },
 
     initData() {
+      let loadingInstance = Loading.service({ fullscreen: true })
+
+      let _this = this
+      setTimeout(function() {
+        const id = _this.$route.params.productId
+        console.log(id)
+        getProductById(id).then(data => {
+
+        })
+      }, 100)
+
       // getCategory()
       //   .then(data => {
       //     this.productCategory = data
       //   })
-      const banners = this.ajaxGetBanner();
+      const banners = this.ajaxGetBanner()
       const length = this.bannerCount - banners.length
       // 幻灯片数量不足用文字代替图片
       // console.log(length)
@@ -461,12 +475,19 @@ export default {
       });
       getTags().then((data) => {
         this.tags = data
+
+      }).finally((_) => {
+        this.$nextTick(() => { // 以服务的方式调用的 Loading 需要异步关闭
+          setTimeout(function() {
+            loadingInstance.close()
+          },500)
+        })
       })
     },
   },
 
   created() {
-    this.initData();
+    this.initData()
   },
 
   components: {

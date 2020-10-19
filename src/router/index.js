@@ -90,7 +90,7 @@ export const constantRoutes = [
         hidden: true
       },
       {
-        path: 'productInfo',
+        path: 'productInfo/:productId',
         name: '商品详情',
         component: () => import('@/views/product/info/index'),
         meta: { title: '添加商品', icon: 'tree' },
