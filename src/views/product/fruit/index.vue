@@ -9,19 +9,25 @@
 
       <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
         <div style="margin: 15px 0;"></div>
-        <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
-          <el-checkbox v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox>
+        <el-checkbox-group v-model="checkedCategory" @change="handlecheckedCategoryChange">
+          <el-checkbox
+            v-for="category in categorys"
+            :label="category.productCategoryId"
+            :key="category.productCategoryId"
+          >
+            {{category.name}}
+          </el-checkbox>
         </el-checkbox-group>
 
       <div class="product-menu">
         <el-row>
           <el-input placeholder="请输入内容" v-model="input" class="input-with-select" size="small">
             <el-select v-model="select" slot="prepend" placeholder="非必选" class="classify">
-              <el-option label="已上线" value="1"></el-option>
-              <el-option label="已下线" value="2"></el-option>
-              <el-option label="精选水果" value="3"></el-option>
+              <el-option label="已上线" value="0"></el-option>
+              <el-option label="已下线" value="1"></el-option>
+              <!-- <el-option label="精选水果" value="3"></el-option> -->
             </el-select>
-            <el-button slot="append" icon="el-icon-search"></el-button>
+            <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
           </el-input>
         </el-row>
       </div>
@@ -50,13 +56,13 @@
           <el-form label-position="left" inline class="demo-table-expand">
 
             <el-form-item label="商品 ID">
-              <span>{{ props.row.id }}</span>
+              <span>{{ props.row.productId }}</span>
             </el-form-item>
             <el-form-item label="商品名称">
-              <span>{{ props.row.author }}</span>
+              <span>{{ props.row.name }}</span>
             </el-form-item>
             <el-form-item label="商品分类">
-              <el-tag type="info" size="small">葡萄</el-tag>
+              <el-tag type="info" size="small">{{ props.row.productCategory.name }}</el-tag>
             </el-form-item>
 
             <el-form-item label="商品价格">
@@ -82,7 +88,7 @@
             </el-form-item>
 
             <el-form-item label="创建时间">
-              <span>2009-01-30 12:02:52</span>
+              <span>{{ props.row.createTime }}</span>
             </el-form-item>
 
             <el-form-item label="携带标签">
@@ -126,7 +132,7 @@
       <el-table-column
         width="110"
         label="商品 ID"
-        prop="id">
+        prop="productId">
       </el-table-column>
 
       <!-- <el-table-column label="Title" width="110">
@@ -137,14 +143,14 @@
       <el-table-column label="商品封面" width="110" align="center">
         <template slot-scope="scope">
           <!-- <span>{{ scope.row.img }}</span> -->
-          <el-avatar shape="square" :size="100" fit="fill" :src="scope.row.img"></el-avatar>
+          <el-avatar shape="square" :size="100" fit="fill" :src="scope.row.defaultImg"></el-avatar>
         </template>
       </el-table-column>
 
       <el-table-column
         width="110"
         label="商品名称"
-        prop="author"
+        prop="name"
         align="center">
       </el-table-column>
       <!-- <el-table-column label="商品名称" width="110" align="center">
@@ -155,12 +161,12 @@
 
       <el-table-column label="描述"  align="center">
         <template slot-scope="scope">
-          {{ scope.row.pageviews }}
+          {{ scope.row.explain }}
         </template>
       </el-table-column>
       <el-table-column class-name="status-col" label="状态" width="110" align="center">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
+          <el-tag :type="scope.row.productStatus | colorFilter">{{ scope.row.productStatus | statusFilter }}</el-tag>
         </template>
       </el-table-column>
 
@@ -196,14 +202,24 @@
 <script>
 import { getList } from '@/api/table'
 const cityOptions = ['上海1', '北京2', '广州3', '深圳4','上海5', '北京6', '广州7', '深圳8']
+import { getCategory } from '@/api/category'
+import { getProducts, getProductById, getProductByCategory, getProductByQuery } from '@/api/product'
 
 export default {
   filters: {
-    statusFilter(status) {
+    colorFilter(status) {
       const statusMap = {
         published: 'success',
         draft: 'gray',
         deleted: 'danger'
+      }
+      return statusMap[status]
+    },
+
+    statusFilter(status) {
+      const statusMap = {
+        '0': '上线',
+        '1': '下线'
       }
       return statusMap[status]
     }
@@ -216,38 +232,87 @@ export default {
       select: '',
       url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
       checkAll: false,
-      checkedCities: ['上海', '北京'],
-      cities: cityOptions,
+      checkedCategory: [],
+      categorys: [],
       isIndeterminate: true
 
     }
   },
   created() {
     this.fetchData()
+
   },
   methods: {
     fetchData() {
       this.listLoading = true
-      getList().then(response => {
-        this.list = response.data.items
+      getCategory().then(data => {
+        this.categorys = data
+      })
+      getProducts().then(data => {
+        this.list = data
         this.listLoading = false
       })
     },
 
     handleCheckAllChange(val) {
-      this.checkedCities = val ? cityOptions : []
-      this.isIndeterminate = false;
+      this.checkedCategory = val ? this.getCategoryIds() : []
+      this.isIndeterminate = false
     },
-    handleCheckedCitiesChange(value) {
+    getCategoryIds() {
+      let ids = []
+      this.categorys.forEach(item =>ids.push(item.productCategoryId))
+      return ids
+    },
+    handlecheckedCategoryChange(value) {
+      console.log(this.checkedCategory)
       let checkedCount = value.length
-      this.checkAll = checkedCount === this.cities.length
-      this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length
+      this.checkAll = checkedCount === this.categorys.length
+      this.isIndeterminate = checkedCount > 0 && checkedCount < this.categorys.length
     },
 
     addProduct() {
       this.$router.push('/product/addProduct')
+    },
+
+    search() {
+      let categorys = []
+      // 查询对象
+      let formData = {
+        name: '',
+        categories: [],
+        status: 0
+      }
+
+      this.listLoading = true
+      console.log(this.checkedCategory)
+
+      if (this.checkAll || this.checkedCategory.length === 0) {
+        getProducts().then(data => {
+          this.list = data
+          this.listLoading = false
+        })
+      } else {
+        this.checkedCategory.forEach(item => categorys.push({'productCategoryId': item}))
+        if ('' != this.input.trim()) {
+          formData.name = this.input
+        }
+
+        if ('' != this.select) {
+          formData.status = this.select
+        }
+
+        formData.categories = categorys
+
+        getProductByQuery(formData)
+          .then(data => {
+            this.list = data
+            this.listLoading = false
+          })
+      }
     }
-  }
+
+  },
+
 }
 </script>
 

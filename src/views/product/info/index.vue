@@ -129,7 +129,6 @@
       <el-tabs
         v-model="activeName"
         type="card"
-        @tab-click="handleClick"
       >
         <el-tab-pane
           label="商品介绍"
@@ -150,15 +149,14 @@
         >
           <el-card shadow="hover">
             <draggable
-              tag="el-collapse"
               :list="list"
-              :component-data="getComponentData()"
               class="list-group"
               draggable=".item"
               ghost-class="ghost"
               :animation="200"
-              @start="dragging = true"
-              @end="dragging = false"
+              :move="checkMove"
+              @start="draggableStart"
+              @end="draggableEnd"
             >
               <div
                 class="list-group-item item"
@@ -299,6 +297,7 @@ export default {
   order: 5,
   data() {
     return {
+      enabled: true,
       currentDate: new Date(),
       memberDiscounts: [],
       memberDiscountsValue: [],
@@ -312,42 +311,48 @@ export default {
       bannerList: ["无幻灯片，请添加", "无幻灯片，请添加", "无幻灯片，请添加"],
       list: [
         {
-          name: "John",
+          order: 0,
+          name: "John1",
           text: "",
           id: 0,
           img:
             "https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg",
         },
         {
-          name: "Joao",
+          order: 1,
+          name: "Jean2",
           text: "",
           id: 1,
           img:
             "https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg",
         },
         {
-          name: "Jean",
+          order: 2,
+          name: "Jean3",
           text: "",
           id: 2,
           img:
             "https://fuss10.elemecdn.com/9/bb/e27858e973f5d7d3904835f46abbdjpeg.jpeg",
         },
         {
-          name: "Jean",
+          order: 3,
+          name: "Jean4",
           text: "",
           id: 3,
           img:
             "https://fuss10.elemecdn.com/d/e6/c4d93a3805b3ce3f323f7974e6f78jpeg.jpeg",
         },
         {
-          name: "Jean",
+          order: 4,
+          name: "Jean5",
           text: "",
           id: 4,
           img:
             "https://fuss10.elemecdn.com/3/28/bbf893f792f03a54408b3b7a7ebf0jpeg.jpeg",
         },
         {
-          name: "Jean",
+          order: 5,
+          name: "Jean6",
           text: "",
           id: 5,
           img:
@@ -396,7 +401,7 @@ export default {
     removeTag(item, index) {},
 
     removeAt(idx) {
-      this.urls.splice(idx, 1);
+      this.urls.splice(idx, 1)
     },
     add: function () {
       // this.urls.push({ name: "Juan " + id, id: id++ })
@@ -404,33 +409,25 @@ export default {
     replace: function () {
       this.urls = [
         "https://fuss10.elemecdn.com/0/6f/e35ff375812e6b0020b6b4e8f9583jpeg.jpeg",
-      ];
+      ]
     },
 
     addBanner() {},
 
-    handleClick(tab, event) {
-      console.log(tab, event);
+    checkMove: function(e, originalEvent) {
+      // console.log(e)
+      console.log('Future index: ' + e.draggedContext.futureIndex)
+
     },
-    handleChange() {
-      console.log("changed");
+    draggableStart() {
+
     },
-    inputChanged(value) {
-      this.activeNames = value;
-    },
-    getComponentData() {
-      return {
-        on: {
-          change: this.handleChange,
-          input: this.inputChanged,
-        },
-        attrs: {
-          wrap: true,
-        },
-        props: {
-          value: this.activeNames,
-        },
-      };
+    draggableEnd(customEvent) {
+      // console.log(customEvent)
+      for (let index = 0; index < this.list.length; index++) {
+        this.list[index].order = index
+      }
+      console.log(this.list)
     },
 
     initData() {
@@ -439,13 +436,13 @@ export default {
       //     this.productCategory = data
       //   })
       const banners = this.ajaxGetBanner();
-      const length = this.bannerCount - banners.length;
+      const length = this.bannerCount - banners.length
       // 幻灯片数量不足用文字代替图片
       // console.log(length)
       for (let i = 0; i < length; i++) {
-        banners.push("无幻灯片，请添加");
+        banners.push("无幻灯片，请添加")
       }
-      this.bannerList = banners;
+      this.bannerList = banners
 
       getMemberDiscounts().then((data) => {
         // this.memberDiscounts = data
@@ -455,16 +452,16 @@ export default {
             key: element.discountsId,
             label: element.discountsExplain,
             id: element.discountsId,
-          });
-        });
-        this.memberDiscounts = gg;
+          })
+        })
+        this.memberDiscounts = gg
       });
       getUserDiscounts().then((data) => {
-        this.userDiscounts = data;
+        this.userDiscounts = data
       });
       getTags().then((data) => {
-        this.tags = data;
-      });
+        this.tags = data
+      })
     },
   },
 
