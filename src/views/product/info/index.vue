@@ -5,18 +5,18 @@
         <el-col :span="8">
           <el-card :body-style="{ padding: '0px' }">
             <img
-              src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+              :src="product.defaultImg"
               height="300px"
               class="image"
             >
             <div style="padding: 14px;">
               <span>{{ product.name }}</span>
               <span class="price">
-                <span>{{ product.name }}</span>
-                <span>{{ product.name }}</span>
+                <span>{{ product.shopPrice }}</span>
+                <span>{{ product.price }}</span>
               </span>
               <div class="bottom clearfix">
-                <time class="time">好吃的汉堡描述商品描述好吃的汉堡描述商品描述...</time>
+                <time class="time">{{ product.explain }}</time>
                 <el-button
                   type="text"
                   class="button"
@@ -42,12 +42,12 @@
                 autoplay="false"
               >
                 <h3
-                  v-if="!item.image"
+                  v-if="!item.url"
                   class="small"
                 >{{ item }}</h3>
                 <el-image
-                  v-if="item.image"
-                  :src="item.image"
+                  v-if="item.url"
+                  :src="item.url"
                 ></el-image>
               </el-carousel-item>
             </el-carousel>
@@ -58,6 +58,7 @@
                 <el-button
                   type="text"
                   class="button"
+                  @click="changeBanner"
                 >更改</el-button>
               </div>
             </div>
@@ -70,7 +71,7 @@
       <el-row>
         <el-col :span="8">
           <el-card shadow="hover">
-            商品分类: <el-tag type="success">标签二</el-tag>
+            商品分类: <el-tag type="success">{{ product.productCategory.name }}</el-tag>
             <!-- <el-button type="text" class="button" style="line-height: 32px;">更改</el-button> -->
           </el-card>
         </el-col>
@@ -82,30 +83,14 @@
           <el-card shadow="hover">
             商品规格:
             <el-tooltip
+              v-for="(item,index) in product.spec"
+              :key="index"
               effect="dark"
               content="specContent"
               placement="top"
             >
               <span class="el-tag el-tag--light">
-                小果（斤）
-                <i
-                  class="el-icon-edit el-tag__edit"
-                  v-on:click="editTag(item, index)"
-                ></i>
-                <i
-                  class="el-tag__close el-icon-close"
-                  v-on:click="removeTag(item, index)"
-                ></i>
-              </span>
-            </el-tooltip>
-
-            <el-tooltip
-              effect="dark"
-              content="specContent"
-              placement="top"
-            >
-              <span class="el-tag el-tag--light">
-                中果（斤）
+                {{item.specName}}（{{item.sku.attrbute}}）
                 <i
                   class="el-icon-edit el-tag__edit"
                   v-on:click="editTag(item, index)"
@@ -301,7 +286,14 @@ export default {
     return {
       enabled: true,
       currentDate: new Date(),
-      product: {},
+      img: '',
+      product: {
+        name: '',
+        defaultImg: '',
+        productCategory: {
+          name: ''
+        }
+      },
       memberDiscounts: [],
       memberDiscountsValue: [],
       userDiscounts: [],
@@ -382,17 +374,6 @@ export default {
     };
   },
   methods: {
-    ajaxGetBanner() {
-      return [
-        {
-          productId: 12345,
-          productName: "新疆葡萄价格美丽",
-          image:
-            "https://img.zcool.cn/community/013de756fb63036ac7257948747896.jpg",
-        },
-      ];
-    },
-
     // renderFunc(h, option) {
     //   return <span>{ option.discountsExplain } - { option.discountsExplain }</span>;
     // },
@@ -432,16 +413,28 @@ export default {
       }
       console.log(this.list)
     },
+    changeBanner() {
+      console.log(this.product)
+    },
 
     initData() {
       let loadingInstance = Loading.service({ fullscreen: true })
 
+      // 使用setTimeout时，this指向的是window对象，这里先保存this对象
       let _this = this
       setTimeout(function() {
         const id = _this.$route.params.productId
         console.log(id)
         getProductById(id).then(data => {
-
+          _this.product = data
+          const banners = data.productBannerImages
+          const length = _this.bannerCount - banners.length
+          // 幻灯片数量不足用文字代替图片
+          // console.log(length)
+          for (let i = 0; i < length; i++) {
+            banners.push("无幻灯片，请添加")
+          }
+          _this.bannerList = banners
         })
       }, 100)
 
@@ -449,14 +442,7 @@ export default {
       //   .then(data => {
       //     this.productCategory = data
       //   })
-      const banners = this.ajaxGetBanner()
-      const length = this.bannerCount - banners.length
-      // 幻灯片数量不足用文字代替图片
-      // console.log(length)
-      for (let i = 0; i < length; i++) {
-        banners.push("无幻灯片，请添加")
-      }
-      this.bannerList = banners
+
 
       getMemberDiscounts().then((data) => {
         // this.memberDiscounts = data
