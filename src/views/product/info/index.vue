@@ -61,7 +61,7 @@
                   type="text"
                   class="button"
                   fit="fill"
-                  @click="changeBanner"
+                  @click="changeBanner()"
                 >更改</el-button>
               </div>
             </div>
@@ -272,7 +272,7 @@
     </el-row>
 
     <!-- 修改基础信息弹窗 -->
-    <info-edit ref="baseInfoDialog"/>
+    <info-edit ref="baseInfoDialog" @onUpdate="onUpdate"/>
   </div>
 </template>
 
@@ -289,9 +289,11 @@ export default {
     return {
       enabled: true,
       currentDate: new Date(),
+      bannerIndex: 0,
       img: '',
       // dialog修改表单
       fruitForm: {
+        productId: '',
         name: '',
         explain: '',
         shopPrice: '',
@@ -342,7 +344,9 @@ export default {
     //   return <span>{ option.discountsExplain } - { option.discountsExplain }</span>;
     // },
 
-    onChange(index) {},
+    onChange(index) {
+      this.bannerIndex = index
+    },
 
     editTag(item, index) {},
 
@@ -379,7 +383,17 @@ export default {
       console.log(this.product.productInfoImages)
     },
     changeBanner() {
-      console.log(this.product)
+      const banner = this.bannerList[this.bannerIndex]
+      const isObj = Object.prototype.toString.call(banner) === '[Object Object]'
+      if (typeof banner === 'object') {
+        // 修改
+
+      } else {
+        // 添加
+      }
+
+      // array.splie(...)
+
     },
 
     baseInfoEdit() {
@@ -387,6 +401,10 @@ export default {
       // Object.assign(cloneObj, this.fruitForm)
       // console.log(this.fruitForm)
       this.$refs.baseInfoDialog.showDialog(this.fruitForm)
+    },
+
+    onUpdate(data) {
+      Object.assign(this.product, data)
     },
 
     initData() {
@@ -402,6 +420,7 @@ export default {
           // _this.fruitForm = JSON.parse(JSON.stringify(data))
           // _this.fruitForm = Object.assign({}, _this.fruitForm, data)
           _this.fruitForm = (({
+            productId,
             name,
             explain,
             shopPrice,
@@ -410,6 +429,7 @@ export default {
               productCategoryId
             }
           }) => ({
+            productId,
             name,
             explain,
             shopPrice,

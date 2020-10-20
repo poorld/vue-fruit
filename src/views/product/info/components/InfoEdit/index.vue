@@ -106,7 +106,18 @@ export default {
     },
 
     formConfirm() {
-      console.log(this.form)
+      // console.log(this.form)
+      updateProduct(this.form).then(data => {
+        this.$message({
+          message: '修改成功',
+          type: 'success'
+        })
+        this.$emit('onUpdate', data)
+      }).catch(error => {
+        this.$message.error('修改失败！')
+      }).finally( _ => {
+        this.dialogVisible = false
+      })
     }
   },
   created() {
