@@ -8,6 +8,7 @@
               :src="product.defaultImg"
               height="300px"
               class="image"
+              @click="updateDefaultImg"
             >
             <div style="padding: 14px;">
               <span>{{ product.name }}</span>
@@ -85,11 +86,11 @@
         >
           <el-card shadow="hover">
             商品规格:
-            <el-tooltip
+            <!-- <el-tooltip
               v-for="(item,index) in product.spec"
               :key="index"
               effect="dark"
-              content="specContent"
+              :content="specContent(item)"
               placement="top"
             >
               <span class="el-tag el-tag--light">
@@ -103,7 +104,13 @@
                   v-on:click="removeTag(item, index)"
                 ></i>
               </span>
-            </el-tooltip>
+            </el-tooltip> -->
+            <edit-tag
+              :tagList="dynamicTags"
+              @onEditTag="onEditTag"
+              @onDeleteTag="onDeleteTag"
+              @onInsertTag="onInsertTag"
+            />
           </el-card>
         </el-col>
       </el-row>
@@ -282,19 +289,37 @@
 
 <script>
 import draggable from 'vuedraggable'
+import infoEdit from './components/InfoEdit/index.vue'
+import ImageUpload from './components/ImageUpload/index.vue'
+import EditTag from './components/EditTag/index.vue'
+
 import { getUserDiscounts, getMemberDiscounts } from '@/api/discounts'
 import { getTags } from '@/api/tag'
 import { Loading } from 'element-ui'
-import { getProductById } from '@/api/product'
-import infoEdit from './components/InfoEdit/index.vue'
-import ImageUpload from './components/ImageUpload/index.vue'
+import { getProductById, updateProduct } from '@/api/product'
+import { addProductBanner, updateProductBanner } from '@/api/productBanner'
 export default {
-
+  computed: {
+    specContent: function() {
+      return function(item) {
+        return `价格:${item.price}（元/${item.sku.attrbute}）| 库存：${item.quantity} ${item.sku.attrbute}`
+      }
+    }
+  },
   data() {
     return {
       enabled: true,
       currentDate: new Date(),
       bannerIndex: 0,
+      // 用于控制bannerIndex是否改变
+      bannerIndexFlag: false,
+      /**
+       * 上传标记
+       * 0修改商品封面
+       * 1添加幻灯片
+       * 2修改幻灯片
+       */
+      uploadFlag: 0,
       img: '',
       // dialog修改表单
       fruitForm: {
@@ -315,6 +340,7 @@ export default {
           name: ''
         }
       },
+      dynamicTags: [],
       memberDiscounts: [],
       memberDiscountsValue: [],
       userDiscounts: [],
@@ -322,20 +348,13 @@ export default {
       activeNames: ['1'],
       checked: false,
       checkTagList: [],
+      // 幻灯片数量
       bannerCount: 5,
       checkMDiscountList: [],
-      bannerList: ['无幻灯片，请添加', '无幻灯片，请添加', '无幻灯片，请添加'],
+      bannerList: [],
       dragging: false,
       activeName: "first",
-      urls: [
-        "https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg",
-        "https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg",
-        // 'https://fuss10.elemecdn.com/0/6f/e35ff375812e6b0020b6b4e8f9583jpeg.jpeg',
-        "https://fuss10.elemecdn.com/9/bb/e27858e973f5d7d3904835f46abbdjpeg.jpeg",
-        "https://fuss10.elemecdn.com/d/e6/c4d93a3805b3ce3f323f7974e6f78jpeg.jpeg",
-        "https://fuss10.elemecdn.com/3/28/bbf893f792f03a54408b3b7a7ebf0jpeg.jpeg",
-        "https://fuss10.elemecdn.com/2/11/6535bcfb26e4c79b48ddde44f4b6fjpeg.jpeg",
-      ],
+      urls: [],
       componentData: {
         props: {
           type: "transition",
@@ -350,7 +369,9 @@ export default {
     // },
 
     onChange(index) {
-      this.bannerIndex = index
+      if (!this.bannerIndexFlag) {
+        this.bannerIndex = index
+      }
     },
 
     editTag(item, index) {},
@@ -387,21 +408,32 @@ export default {
       }
       console.log(this.product.productInfoImages)
     },
+    updateDefaultImg() {
+      this.uploadFlag = 0
+      this.$refs.bannerUploadDialog.showTypeDialog()
+    },
     changeBanner() {
+      this.bannerIndexFlag = true
       const banner = this.bannerList[this.bannerIndex]
       const isObj = Object.prototype.toString.call(banner) === '[Object Object]'
       if (typeof banner === 'object') {
-        // 修改
-
+        // 修改幻灯片 2
+        // this.bannerUpdate = true
+        this.uploadFlag = 2
       } else {
-        // 添加
-        this.$refs.bannerUploadDialog.showTypeDialog()
+        // 添加幻灯片1
+        // this.bannerUpdate = false
+        this.uploadFlag = 1
       }
+      this.$refs.bannerUploadDialog.showTypeDialog()
 
       // array.splie(...)
 
     },
 
+    /**
+     * 基础信息修改，弹出Dialog
+     */
     baseInfoEdit() {
       // let cloneObj = {}
       // Object.assign(cloneObj, this.fruitForm)
@@ -414,9 +446,67 @@ export default {
       Object.assign(this.product, data)
     },
 
-    // 获取链接，添加幻灯片
+    /**
+     * 上传成功，获取链接
+     * 上传标记
+     * 0修改商品封面
+     * 1添加幻灯片
+     * 2修改幻灯片
+     */
     onLink(imgLink) {
+      // 更新
+      switch(this.uploadFlag){
+        case 0:
+          const productFormData = {
+            productId: this.product.productId,
+            defaultImg: imgLink
+          }
+          updateProduct(productFormData).then(data => {
+            this.product.defaultImg = imgLink
+          })
+          break
+        case 1:
+          let formData = {
+            productId: this.product.productId,
+            url: imgLink
+          }
+          addProductBanner(formData).then(data => {
+            this.bannerList.splice(this.bannerIndex, 1, data)
+          }).finally(_ => {
+            this.bannerIndexFlag = false
+          })
+          break
+        case 2:
+          const banner = this.bannerList[this.bannerIndex]
+          banner.url = imgLink
+          updateProductBanner(banner).then(data => {
+            this.bannerList.splice(this.bannerIndex, 1, data)
+          }).finally(_ => {
+            this.bannerIndexFlag = false
+          })
+          break
+      }
+    },
 
+    // 编辑
+    onEditTag(item, index) {
+      console.log(item, index)
+      this.dynamicTags.splice(index, 1, item)
+    },
+
+    // 删除
+    onDeleteTag(item, index) {
+      console.log(item);
+      this.dynamicTags.splice(index, 1)
+    },
+
+    // 添加
+    onInsertTag(value) {
+      console.log("onInsertTag", value)
+      this.dynamicTags.push(value)
+      // addCategory({ name: value }).then((res) => {
+      //   this.dynamicTags.push(res)
+      // });
     },
 
     initData() {
@@ -451,6 +541,7 @@ export default {
             }
           }))(data)
 
+          _this.dynamicTags = data.spec
           // console.log(_this.fruitForm, '_this.fruitForm')
 
           const banners = data.productBannerImages
@@ -466,15 +557,15 @@ export default {
 
       getMemberDiscounts().then((data) => {
         // this.memberDiscounts = data
-        let gg = []
+        let discounts = []
         data.forEach((element) => {
-          gg.push({
+          discounts.push({
             key: element.discountsId,
             label: element.discountsExplain,
             id: element.discountsId,
           })
         })
-        this.memberDiscounts = gg
+        this.memberDiscounts = discounts
       })
 
       getUserDiscounts().then((data) => {
@@ -502,7 +593,8 @@ export default {
   components: {
     draggable,
     infoEdit,
-    ImageUpload
+    ImageUpload,
+    EditTag
   },
 };
 </script>

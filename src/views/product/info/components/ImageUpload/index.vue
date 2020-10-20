@@ -94,7 +94,7 @@ export default {
       this.selectTypeVisible = true
     },
     uploadClick() {
-      this.dialogVisible = false
+      this.selectTypeVisible = false
       this.uploadVisible = true
     },
 
@@ -106,7 +106,10 @@ export default {
     },
 
     handleAvatarSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw)
+      // this.imageUrl = URL.createObjectURL(file.raw)
+      console.log(res)
+      this.$emit('onLink', res.data.fileDownloadUrl)
+      this.uploadVisible = false
     },
     beforeAvatarUpload(file) {
       const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png'
@@ -143,6 +146,7 @@ export default {
       if (this.bannerImageFlag) {
         // api
         this.$emit('onLink', this.textarea)
+        this.linkVisible = false
       } else {
         this.$message.error('图像加载失败，请重试!')
       }

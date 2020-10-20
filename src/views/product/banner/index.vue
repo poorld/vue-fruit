@@ -183,7 +183,8 @@ export default {
     },
 
     handleAvatarSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw)
+      // ??
+      // this.imageUrl = URL.createObjectURL(file.raw)
     },
     beforeAvatarUpload(file) {
       const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png'
