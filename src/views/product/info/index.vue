@@ -272,7 +272,11 @@
     </el-row>
 
     <!-- 修改基础信息弹窗 -->
-    <info-edit ref="baseInfoDialog" @onUpdate="onUpdate"/>
+    <info-edit ref="baseInfoDialog" @onUpdate="onUpdate" />
+
+    <!-- 图片上传 -->
+    <image-upload :limit="1" @onLink="onLink" ref="bannerUploadDialog"/>
+
   </div>
 </template>
 
@@ -283,6 +287,7 @@ import { getTags } from '@/api/tag'
 import { Loading } from 'element-ui'
 import { getProductById } from '@/api/product'
 import infoEdit from './components/InfoEdit/index.vue'
+import ImageUpload from './components/ImageUpload/index.vue'
 export default {
 
   data() {
@@ -390,6 +395,7 @@ export default {
 
       } else {
         // 添加
+        this.$refs.bannerUploadDialog.showTypeDialog()
       }
 
       // array.splie(...)
@@ -403,8 +409,14 @@ export default {
       this.$refs.baseInfoDialog.showDialog(this.fruitForm)
     },
 
+    // 基础信息修改完成，更新product信息
     onUpdate(data) {
       Object.assign(this.product, data)
+    },
+
+    // 获取链接，添加幻灯片
+    onLink(imgLink) {
+
     },
 
     initData() {
@@ -489,7 +501,8 @@ export default {
 
   components: {
     draggable,
-    infoEdit
+    infoEdit,
+    ImageUpload
   },
 };
 </script>
