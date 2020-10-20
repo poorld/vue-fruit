@@ -38,3 +38,11 @@ export function addProduct(data) {
     data
   })
 }
+
+export function updateProduct(data) {
+  return apiFruitService({
+    url: '/fruit/product',
+    method: 'put',
+    data
+  })
+}

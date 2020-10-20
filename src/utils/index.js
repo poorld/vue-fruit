@@ -115,3 +115,40 @@ export function param2Obj(url) {
   })
   return obj
 }
+
+
+/**
+ * 清除对象的属性值
+ * @param {Object} obj
+ * @returns {Object}
+ */
+export function clearValue(obj) {
+  Object.keys(obj).forEach(key => {
+      if (typeof obj[key]=='object'){
+          this.clearValue(obj[key])
+      }else {
+          obj[key]=''
+      }
+  })
+  return obj
+}
+
+export function cloneObj(obj, filter=()=>true, child = false) {
+  if (!obj|| typeof(obj) != 'object')
+    return obj
+  let res= {}
+  for (let i in obj) {
+    if(obj.hasOwnProperty(i)) {
+      let flag = child||
+        (filter && (Array.isArray(filter)?
+          filter.indexOf(i)>-1
+          : filter+''===filter?
+          filter===i
+          :filter(i)))
+      if (flag) {
+        res[i] = cloneObj (obj[i],filter, true)
+      }
+    }
+  }
+  return res
+}

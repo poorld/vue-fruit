@@ -20,6 +20,7 @@
                 <el-button
                   type="text"
                   class="button"
+                  @click="baseInfoEdit"
                 >更改</el-button>
               </div>
             </div>
@@ -270,6 +271,8 @@
       </el-card>
     </el-row>
 
+    <!-- 修改基础信息弹窗 -->
+    <info-edit ref="baseInfoDialog"/>
   </div>
 </template>
 
@@ -279,16 +282,25 @@ import { getUserDiscounts, getMemberDiscounts } from '@/api/discounts'
 import { getTags } from '@/api/tag'
 import { Loading } from 'element-ui'
 import { getProductById } from '@/api/product'
-
+import infoEdit from './components/InfoEdit/index.vue'
 export default {
-  name: 'footerslot',
-  display: 'Footer slot',
-  order: 5,
+
   data() {
     return {
       enabled: true,
       currentDate: new Date(),
       img: '',
+      // dialog修改表单
+      fruitForm: {
+        name: '',
+        explain: '',
+        shopPrice: '',
+        price: '',
+        productCategory: {
+          productCategoryId: ''
+        }
+      },
+
       product: {
         name: '',
         defaultImg: '',
@@ -370,6 +382,13 @@ export default {
       console.log(this.product)
     },
 
+    baseInfoEdit() {
+      // let cloneObj = {}
+      // Object.assign(cloneObj, this.fruitForm)
+      // console.log(this.fruitForm)
+      this.$refs.baseInfoDialog.showDialog(this.fruitForm)
+    },
+
     initData() {
       let loadingInstance = Loading.service({ fullscreen: true })
 
@@ -380,6 +399,28 @@ export default {
         console.log(id)
         getProductById(id).then(data => {
           _this.product = data
+          // _this.fruitForm = JSON.parse(JSON.stringify(data))
+          // _this.fruitForm = Object.assign({}, _this.fruitForm, data)
+          _this.fruitForm = (({
+            name,
+            explain,
+            shopPrice,
+            price,
+            productCategory: {
+              productCategoryId
+            }
+          }) => ({
+            name,
+            explain,
+            shopPrice,
+            price,
+            productCategory: {
+              productCategoryId
+            }
+          }))(data)
+
+          // console.log(_this.fruitForm, '_this.fruitForm')
+
           const banners = data.productBannerImages
           const length = _this.bannerCount - banners.length
           // 幻灯片数量不足用文字代替图片
@@ -391,15 +432,9 @@ export default {
         })
       }, 100)
 
-      // getCategory()
-      //   .then(data => {
-      //     this.productCategory = data
-      //   })
-
-
       getMemberDiscounts().then((data) => {
         // this.memberDiscounts = data
-        let gg = [];
+        let gg = []
         data.forEach((element) => {
           gg.push({
             key: element.discountsId,
@@ -408,10 +443,12 @@ export default {
           })
         })
         this.memberDiscounts = gg
-      });
+      })
+
       getUserDiscounts().then((data) => {
         this.userDiscounts = data
-      });
+      })
+
       getTags().then((data) => {
         this.tags = data
 
@@ -422,6 +459,7 @@ export default {
           },500)
         })
       })
+
     },
   },
 
@@ -431,6 +469,7 @@ export default {
 
   components: {
     draggable,
+    infoEdit
   },
 };
 </script>
