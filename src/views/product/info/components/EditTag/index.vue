@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="display: inline-block;">
     <div v-for="(item, index) in tagList" :key="index" style="display: inline-block;margin-right: 10px;">
       <el-tooltip class="item" effect="dark" :content="specContent(item)" placement="top">
         <span class="el-tag el-tag--light">
@@ -134,9 +134,6 @@ export default {
           info('取消删除')
         })
     },
-    handleClose(tag) {
-      this.tagList.splice(this.tagList.indexOf(tag), 1);
-    },
 
     insertSpec() {
       // this.inputVisible = true;
@@ -186,7 +183,6 @@ export default {
   },
 
   created() {
-    console.log('taglist',this.tagList);
     getSku()
       .then(data => {
         this.skus = data

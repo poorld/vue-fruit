@@ -86,25 +86,6 @@
         >
           <el-card shadow="hover">
             商品规格:
-            <!-- <el-tooltip
-              v-for="(item,index) in product.spec"
-              :key="index"
-              effect="dark"
-              :content="specContent(item)"
-              placement="top"
-            >
-              <span class="el-tag el-tag--light">
-                {{item.specName}}（{{item.sku.attrbute}}）
-                <i
-                  class="el-icon-edit el-tag__edit"
-                  v-on:click="editTag(item, index)"
-                ></i>
-                <i
-                  class="el-tag__close el-icon-close"
-                  v-on:click="removeTag(item, index)"
-                ></i>
-              </span>
-            </el-tooltip> -->
             <edit-tag
               :tagList="dynamicTags"
               @onEditTag="onEditTag"
@@ -135,6 +116,12 @@
               :key="index"
               :src="item.url"
             ></el-image>
+            <el-alert
+              v-if="product.productInfoImages.length === 0"
+              title="您暂时没有商品简介图片哦！点击图片编辑添加图片！！！"
+              type="error"
+              effect="dark">
+            </el-alert>
           </div>
         </el-tab-pane>
 
@@ -292,12 +279,14 @@ import draggable from 'vuedraggable'
 import infoEdit from './components/InfoEdit/index.vue'
 import ImageUpload from './components/ImageUpload/index.vue'
 import EditTag from './components/EditTag/index.vue'
-
-import { getUserDiscounts, getMemberDiscounts } from '@/api/discounts'
 import { getTags } from '@/api/tag'
 import { Loading } from 'element-ui'
+
+import { getUserDiscounts, getMemberDiscounts } from '@/api/discounts'
 import { getProductById, updateProduct } from '@/api/product'
 import { addProductBanner, updateProductBanner } from '@/api/productBanner'
+import { addSpec, updateSpec, deleteSpec } from '@/api/spec'
+
 export default {
   computed: {
     specContent: function() {
@@ -374,32 +363,11 @@ export default {
       }
     },
 
-    editTag(item, index) {},
-
-    removeTag(item, index) {},
-
-    removeAt(idx) {
-      this.urls.splice(idx, 1)
-    },
-    add: function () {
-      // this.urls.push({ name: "Juan " + id, id: id++ })
-    },
-    replace: function () {
-      this.urls = [
-        "https://fuss10.elemecdn.com/0/6f/e35ff375812e6b0020b6b4e8f9583jpeg.jpeg",
-      ]
-    },
-
-    addBanner() {},
-
     checkMove: function(e, originalEvent) {
       // console.log(e)
       console.log('Future index: ' + e.draggedContext.futureIndex)
-
     },
-    draggableStart() {
-
-    },
+    draggableStart() {},
     draggableEnd(customEvent) {
       // console.log(customEvent)
       const length = this.product.productInfoImages.length
@@ -408,6 +376,7 @@ export default {
       }
       console.log(this.product.productInfoImages)
     },
+
     updateDefaultImg() {
       this.uploadFlag = 0
       this.$refs.bannerUploadDialog.showTypeDialog()
@@ -488,25 +457,36 @@ export default {
       }
     },
 
+    // addSpec, updateSpec, deleteSpec
     // 编辑
     onEditTag(item, index) {
-      console.log(item, index)
-      this.dynamicTags.splice(index, 1, item)
+      // console.log(item, index)
+      updateSpec(item).then(data => {
+        this.dynamicTags.splice(index, 1, data)
+      })
     },
 
     // 删除
     onDeleteTag(item, index) {
-      console.log(item);
-      this.dynamicTags.splice(index, 1)
+      console.log(item)
+      deleteSpec(item.specId).then(data => {
+        this.dynamicTags.splice(index, 1)
+      })
     },
 
     // 添加
-    onInsertTag(value) {
-      console.log("onInsertTag", value)
-      this.dynamicTags.push(value)
-      // addCategory({ name: value }).then((res) => {
-      //   this.dynamicTags.push(res)
-      // });
+    onInsertTag(spec) {
+      spec.productId = this.product.productId
+      // console.log("onInsertTag", value)
+      addSpec(spec).then(data => {
+        /**
+         * 这里push data而不是spec
+         * 因为返回的data有新id值，而spec没有
+         * 如果使用spec删除会出错，因为没有id值
+         */
+        this.dynamicTags.push(data)
+      })
+
     },
 
     initData() {
