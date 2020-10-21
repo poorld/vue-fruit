@@ -211,7 +211,7 @@
           <el-button
             type="warning"
             size="mini"
-            @click="updateUserDiscounts"
+            @click="setUserDiscounts"
             style="margin-left: 50px;"
             round
           >修改优惠</el-button>
@@ -233,7 +233,7 @@
           <el-button
             type="warning"
             size="mini"
-            @click="updateMembersDiscounts"
+            @click="setMembersDiscounts"
             style="margin-left: 50px;"
             round
           >修改优惠</el-button>
@@ -316,6 +316,7 @@ import { addProductBanner, updateProductBanner } from '@/api/productBanner'
 import { addSpec, updateSpec, deleteSpec } from '@/api/spec'
 import { addProductInfo, updateProductInfo, deleteProductInfo, updateInfoSort } from '@/api/productInfo'
 import { updateProductTag } from '@/api/productTag'
+import { updateUserDiscounts, updateMemberDiscounts } from '@/api/productDiscounts'
 
 export default {
   computed: {
@@ -669,12 +670,34 @@ export default {
     },
 
     // 修改用户优惠
-    updateUserDiscounts() {
-      console.log(this.userDiscountsValue)
+    setUserDiscounts() {
+      // console.log(this.userDiscountsValue)
+      const productId = this.product.productId
+      updateUserDiscounts(this.setDiscountsFormData(this.userDiscountsValue), productId)
+        .then(data => {
+          success('修改成功!')
+        })
+
     },
 
-    updateMembersDiscounts() {
+    setMembersDiscounts() {
+      const productId = this.product.productId
+      updateMemberDiscounts(this.setDiscountsFormData(this.memberDiscountsValue), productId)
+        .then(data => {
+          success('修改成功!')
+        })
+    },
 
+    setDiscountsFormData(discountsValue) {
+      let formData = []
+      const productId = this.product.productId
+      discountsValue.forEach(element => {
+        formData.push({
+          productId: productId,
+          discountsId: element
+        })
+      })
+      return formData
     },
 
     /**
