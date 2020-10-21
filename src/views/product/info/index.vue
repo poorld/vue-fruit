@@ -200,15 +200,23 @@
         >
           <!-- <el-transfer v-model="memberDiscountsValue" :data="memberDiscounts"></el-transfer> -->
           <el-transfer
-            v-model="memberDiscountsValue"
-            :data="memberDiscounts"
-            :titles="['已参与优惠', '未参与优惠']"
-            :button-texts="['参与优惠', '取消优惠']"
+            v-model="userDiscountsValue"
+            :data="userDiscounts"
+            :titles="['未参与优惠', '已参与优惠']"
+            :button-texts="['取消优惠', '参与优惠']"
           >
             <span slot-scope="{ option }">{{ option.label }}
             </span>
           </el-transfer>
+          <el-button
+            type="warning"
+            size="mini"
+            @click="updateUserDiscounts"
+            style="margin-left: 50px;"
+            round
+          >修改优惠</el-button>
         </el-tab-pane>
+
         <el-tab-pane
           label="会员优惠"
           name="fourth"
@@ -216,12 +224,19 @@
           <el-transfer
             v-model="memberDiscountsValue"
             :data="memberDiscounts"
-            :titles="['已参与优惠', '未参与优惠']"
-            :button-texts="['参与优惠', '取消优惠']"
+            :titles="['未参与优惠', '已参与优惠']"
+            :button-texts="['取消优惠', '参与优惠']"
           >
             <span slot-scope="{ option }">{{ option.label }}
             </span>
           </el-transfer>
+          <el-button
+            type="warning"
+            size="mini"
+            @click="updateMembersDiscounts"
+            style="margin-left: 50px;"
+            round
+          >修改优惠</el-button>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -355,6 +370,8 @@ export default {
       memberDiscountsValue: [],
       // 用户优惠
       userDiscounts: [],
+      // 选中用户优惠
+      userDiscountsValue: [],
       // 商品标签
       tags: [],
       activeNames: ['1'],
@@ -651,6 +668,15 @@ export default {
 
     },
 
+    // 修改用户优惠
+    updateUserDiscounts() {
+      console.log(this.userDiscountsValue)
+    },
+
+    updateMembersDiscounts() {
+
+    },
+
     /**
      * 初始化数据
      */
@@ -696,6 +722,16 @@ export default {
           _this.checkTagList = productTags
           // console.log(_this.fruitForm, '_this.fruitForm')
 
+          // 优惠
+          const discounts = data.discounts
+          discounts.forEach(element => {
+            if (element.members) {
+              _this.memberDiscountsValue.push(element.discountsId)
+            } else {
+              _this.userDiscountsValue.push(element.discountsId)
+            }
+          })
+
           const banners = data.productBannerImages
           const length = _this.bannerCount - banners.length
           // 幻灯片数量不足用文字代替图片
@@ -721,7 +757,16 @@ export default {
       })
 
       getUserDiscounts().then((data) => {
-        this.userDiscounts = data
+        // this.userDiscounts = data
+        let discounts = []
+        data.forEach((element) => {
+          discounts.push({
+            key: element.discountsId,
+            label: element.discountsExplain,
+            id: element.discountsId,
+          })
+        })
+        this.userDiscounts = discounts
       })
 
       getTags().then((data) => {
@@ -903,5 +948,9 @@ input {
 }
 .img-order {
   margin-left: 30px;
+}
+
+.el-transfer {
+  display: inline-block;
 }
 </style>
