@@ -117,7 +117,7 @@
               :src="item.url"
             ></el-image>
             <el-alert
-              v-if="product.productInfoImages.length === 0"
+              v-if="product && product.productInfoImages && product.productInfoImages.length === 0"
               title="您暂时没有商品简介图片哦！点击图片编辑添加图片！！！"
               type="error"
               effect="dark">
@@ -158,11 +158,13 @@
                   <el-button
                     type="warning"
                     size="mini"
+                    @click="updateInfoImage(item, index)"
                     round
                   >修改图片</el-button>
                   <el-button
                     type="danger"
                     size="mini"
+                    @click="deleteInfoImage(item, index)"
                     round
                   >删除图片</el-button>
                 </div>
@@ -178,11 +180,13 @@
                 <el-button
                   type="success"
                   size="mini"
+                  @click="addInfoImage"
                   round
                 >添加图片</el-button>
                 <el-button
                   type="primary"
                   size="mini"
+                  @click="saveInfoSort"
                   round
                 >保存序号</el-button>
               </div>
@@ -248,7 +252,14 @@
                   {{item.name}}
                 </el-checkbox>
               </el-checkbox-group>
-
+            </div>
+            <div style="text-align: right;padding-right: 30px;">
+              <el-button
+                    type="info"
+                    size="mini"
+                    @click="updateTags"
+                    round
+                  >修改</el-button>
             </div>
           </el-collapse-item>
           <el-collapse-item
@@ -259,7 +270,8 @@
             <div><svg-icon icon-class="tick" />热销水果：语言表达清晰且表意明确，让用户快速理解进而作出决策；</div>
             <div>限时抢购：界面简单直白，让用户快速识别而非回忆，减少用户记忆负担。</div>
             <div>每日精选：设计简洁直观的操作流程；</div>
-
+            <br />
+            <div><svg-icon icon-class="time" />产品创建时间: {{product.createTime}}</div>
           </el-collapse-item>
         </el-collapse>
       </el-card>
@@ -281,11 +293,14 @@ import ImageUpload from './components/ImageUpload/index.vue'
 import EditTag from './components/EditTag/index.vue'
 import { getTags } from '@/api/tag'
 import { Loading } from 'element-ui'
+import { confirm, info, success } from '@/utils/dialog'
 
 import { getUserDiscounts, getMemberDiscounts } from '@/api/discounts'
 import { getProductById, updateProduct } from '@/api/product'
 import { addProductBanner, updateProductBanner } from '@/api/productBanner'
 import { addSpec, updateSpec, deleteSpec } from '@/api/spec'
+import { addProductInfo, updateProductInfo, deleteProductInfo, updateInfoSort } from '@/api/productInfo'
+import { updateProductTag } from '@/api/productTag'
 
 export default {
   computed: {
@@ -299,6 +314,7 @@ export default {
     return {
       enabled: true,
       currentDate: new Date(),
+      // 幻灯片下标
       bannerIndex: 0,
       // 用于控制bannerIndex是否改变
       bannerIndexFlag: false,
@@ -307,9 +323,10 @@ export default {
        * 0修改商品封面
        * 1添加幻灯片
        * 2修改幻灯片
+       * 3添加商品介绍图片
+       * 4修改商品介绍图片
        */
       uploadFlag: 0,
-      img: '',
       // dialog修改表单
       fruitForm: {
         productId: '',
@@ -322,6 +339,7 @@ export default {
         }
       },
 
+      // 商品信息绑定
       product: {
         name: '',
         defaultImg: '',
@@ -329,29 +347,41 @@ export default {
           name: ''
         }
       },
+      // 商品规格
       dynamicTags: [],
+      // 会员优惠
       memberDiscounts: [],
+      // 选中会员优惠
       memberDiscountsValue: [],
+      // 用户优惠
       userDiscounts: [],
+      // 商品标签
       tags: [],
       activeNames: ['1'],
       checked: false,
+      // 选中的商品标签
       checkTagList: [],
       // 幻灯片数量
       bannerCount: 5,
-      checkMDiscountList: [],
+      // 幻灯片列表
       bannerList: [],
       dragging: false,
       activeName: "first",
-      urls: [],
       componentData: {
         props: {
           type: "transition",
           url: "flip-list",
         },
       },
-    };
+
+      // -----暂时变量-----
+      // 商家介绍图片信息
+      tempInfoImages: {},
+      // 商家介绍图片下标
+      tempInfoImagesIndex: 0
+    }
   },
+
   methods: {
     // renderFunc(h, option) {
     //   return <span>{ option.discountsExplain } - { option.discountsExplain }</span>;
@@ -368,19 +398,83 @@ export default {
       console.log('Future index: ' + e.draggedContext.futureIndex)
     },
     draggableStart() {},
+    /**
+     * 图片拖动完成
+     */
     draggableEnd(customEvent) {
       // console.log(customEvent)
-      const length = this.product.productInfoImages.length
-      for (let index = 0; index < length; index++) {
-        this.product.productInfoImages[index].sort = index
+      this.infoImageOrder()
+    },
+    // 图片排序
+    infoImageOrder() {
+      console.log('product',this.product)
+      if (this.product && this.product.productInfoImages) {
+        const length = this.product.productInfoImages.length
+        for (let index = 0; index < length; index++) {
+          this.product.productInfoImages[index].sort = index
+        }
+        return this.product.productInfoImages
       }
-      console.log(this.product.productInfoImages)
+
+    },
+    /**
+     * 添加商品介绍图片
+     */
+    addInfoImage() {
+      this.uploadFlag = 3
+      this.$refs.bannerUploadDialog.showTypeDialog()
     },
 
+    /**
+     * 修改商品介绍图片
+     */
+    updateInfoImage(item, index) {
+      this.uploadFlag = 4
+      this.tempInfoImages = JSON.parse(JSON.stringify(item))
+      this.tempInfoImagesIndex = index
+      this.$refs.bannerUploadDialog.showTypeDialog()
+    },
+    /**
+     * 删除商品介绍图片
+     */
+    deleteInfoImage(item, index) {
+      confirm('提示', `确定要删除序号为[${index}]的图片吗?`)
+        .then(() => {
+          deleteProductInfo(item.piiId).then(data => {
+            this.product.productInfoImages.splice(index, 1)
+          })
+        })
+        .catch(() => {
+          info('取消删除')
+        })
+    },
+    /**
+     * 保存序号
+     */
+    saveInfoSort() {
+      const productInfoImages = this.infoImageOrder()
+      confirm('提示', `确定要根据序号排序图片吗?`)
+        .then(() => {
+          updateInfoSort(productInfoImages).then(data => {
+            success('排序成功！')
+          })
+        })
+        .catch(() => {
+          info('取消排序')
+        })
+    },
+
+    /**
+     * 上传封面
+     */
     updateDefaultImg() {
       this.uploadFlag = 0
       this.$refs.bannerUploadDialog.showTypeDialog()
     },
+
+    /**
+     * 修改幻灯片
+     */
     changeBanner() {
       this.bannerIndexFlag = true
       const banner = this.bannerList[this.bannerIndex]
@@ -414,6 +508,35 @@ export default {
     onUpdate(data) {
       Object.assign(this.product, data)
     },
+    // 修改标签
+    updateTags() {
+      const id = this.product.productId
+      // 推荐标签
+      if (null !== this.checked) {
+        let formData = {
+          productId: id,
+          recommended: this.checked
+        }
+        updateProduct(formData)
+          .then(data => {
+            success('修改成功!')
+          })
+      }
+
+      // 携带标签
+      let tags = []
+      this.checkTagList.forEach(e => tags.push({
+        productId: id,
+        tagId: e
+      }))
+      updateProductTag(tags, id)
+        .then(data => {
+          success('修改成功!')
+        })
+      console.log(this.checkTagList)
+      console.log(this.checked)
+      console.log(tags)
+    },
 
     /**
      * 上传成功，获取链接
@@ -421,10 +544,16 @@ export default {
      * 0修改商品封面
      * 1添加幻灯片
      * 2修改幻灯片
+     * 3添加商品介绍
+     * 4修改商品介绍
      */
     onLink(imgLink) {
       // 更新
       switch(this.uploadFlag){
+
+        /**
+         * 0修改商品封面
+         */
         case 0:
           const productFormData = {
             productId: this.product.productId,
@@ -434,6 +563,10 @@ export default {
             this.product.defaultImg = imgLink
           })
           break
+
+        /**
+         * 1添加幻灯片
+         */
         case 1:
           let formData = {
             productId: this.product.productId,
@@ -445,6 +578,10 @@ export default {
             this.bannerIndexFlag = false
           })
           break
+
+        /**
+         * 2修改幻灯片
+         */
         case 2:
           const banner = this.bannerList[this.bannerIndex]
           banner.url = imgLink
@@ -454,11 +591,36 @@ export default {
             this.bannerIndexFlag = false
           })
           break
+
+        /**
+         * 3添加商品介绍
+         */
+        case 3:
+          const infoImageForm = {
+            productId: this.product.productId,
+            url: imgLink
+          }
+          addProductInfo(infoImageForm).then(data => {
+            this.product.productInfoImages.push(data)
+          })
+          break
+
+        /**
+         * 4修改商品介绍
+         */
+        case 4:
+          // this.tempInfoImages = item
+          // this.tempInfoImagesIndex = index
+          this.tempInfoImages.url = imgLink
+          updateProductInfo(this.tempInfoImages).then(data => {
+            this.product.productInfoImages.splice(this.tempInfoImagesIndex, 1, data)
+          })
+          break
       }
     },
 
     // addSpec, updateSpec, deleteSpec
-    // 编辑
+    // 编辑规格
     onEditTag(item, index) {
       // console.log(item, index)
       updateSpec(item).then(data => {
@@ -474,7 +636,7 @@ export default {
       })
     },
 
-    // 添加
+    // 添加规格
     onInsertTag(spec) {
       spec.productId = this.product.productId
       // console.log("onInsertTag", value)
@@ -489,6 +651,9 @@ export default {
 
     },
 
+    /**
+     * 初始化数据
+     */
     initData() {
       let loadingInstance = Loading.service({ fullscreen: true })
 
@@ -521,7 +686,14 @@ export default {
             }
           }))(data)
 
+          // 规格
           _this.dynamicTags = data.spec
+          _this.checked = data.recommended
+
+          // 标签
+          let productTags = []
+          data.tags.forEach(e => productTags.push(e.tagId))
+          _this.checkTagList = productTags
           // console.log(_this.fruitForm, '_this.fruitForm')
 
           const banners = data.productBannerImages
@@ -564,6 +736,10 @@ export default {
       })
 
     },
+
+    setProduct(_this, data) {
+
+    }
   },
 
   created() {
