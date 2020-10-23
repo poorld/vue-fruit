@@ -80,7 +80,12 @@
             </el-form-item> -->
 
             <el-form-item label="是否推荐">
-              <el-tag type="success" size="small"><span>true</span></el-tag>
+              <el-tag v-if="props.row.recommended" type="success" size="small">
+                <span>{{ props.row.recommended }}</span>
+              </el-tag>
+              <el-tag v-else type="info" size="small">
+                <span>false</span>
+              </el-tag>
             </el-form-item>
 
             <el-form-item label="水果优惠">
@@ -92,10 +97,13 @@
             </el-form-item>
 
             <el-form-item label="携带标签">
-              <span class="tag">产地直销</span>
+              <span class="tag" v-for="item in props.row.tags" :key="item.tagId">
+                {{ item.name }}
+              </span>
+              <!-- <span class="tag">产地直销</span>
               <span class="tag">限时优惠</span>
               <span class="tag">店长推荐</span>
-              <span class="tag">新鲜时蔬</span>
+              <span class="tag">新鲜时蔬</span> -->
             </el-form-item>
 
             <!-- <el-image
@@ -143,7 +151,10 @@
       <el-table-column label="商品封面" width="110" align="center">
         <template slot-scope="scope">
           <!-- <span>{{ scope.row.img }}</span> -->
-          <el-avatar shape="square" :size="100" fit="fill" :src="scope.row.defaultImg"></el-avatar>
+          <div class="cover">
+            <img v-if="scope.row.recommended" width="50px" class="cover-img" src="@/assets/product_images/icon_recommend.png" />
+            <el-avatar shape="square" :size="100" fit="fill" :src="scope.row.defaultImg"></el-avatar>
+          </div>
         </template>
       </el-table-column>
 
@@ -427,5 +438,12 @@ export default {
     padding: 2px 5px;
     border-radius: 3px;
     margin-right: 3px;
+  }
+
+  .cover {
+    position: relative;
+  }
+  .cover-img {
+    position: absolute;
   }
 </style>
