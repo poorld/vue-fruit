@@ -5,7 +5,7 @@
       <el-carousel trigger="click" height="300px" @change="onChange">
         <el-carousel-item v-for="(item,index) in bannerList" :key="index" autoplay="false">
           <h3 v-if="!item.image" class="small">{{ item }}</h3>
-          <el-image v-if="item.image" :src="item.image"></el-image>
+          <el-image v-if="item.image" :src="item.image" @click="toProduct(item.productId)"></el-image>
         </el-carousel-item>
       </el-carousel>
 
@@ -19,11 +19,25 @@
 
       </div>
 
-      <div class="banner-info">
+      <el-alert
+        v-if="associated"
+        title="幻灯片已关联产品！"
+        type="info"
+        :description="productDescription"
+        show-icon>
+      </el-alert>
+      <el-alert
+        v-else
+        title="幻灯片无产品关联，请前往商品管理！"
+        type="error"
+        :description="productDescription"
+        show-icon>
+      </el-alert>
+      <!-- <div class="banner-info">
         <span>幻灯片{{bannerIndex + 1}}</span>
         <span>商品ID{{ productId }}</span>
         <span>商品名称{{ productName }}</span>
-      </div>
+      </div> -->
 
       <div class="edit">
         <el-button type="primary" icon="el-icon-edit" circle @click="bannerEdit"></el-button>
@@ -64,11 +78,13 @@
           :on-preview="handlePreview"
           :on-remove="handleRemove"
           :file-list="fileList"
+          :limit="1"
           :on-success="handleAvatarSuccess"
+          :on-error="handleAvatarError"
           :before-upload="beforeAvatarUpload"
           list-type="picture">
           <el-button size="small" type="primary">点击上传</el-button>
-          <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+          <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过2MB</div>
         </el-upload>
       </div>
       <span slot="footer" class="dialog-footer">
@@ -109,7 +125,7 @@
 </template>
 
 <script>
-// import { getBook, addBook, uploadImage } from '@/api/banner'
+import { getBanners, addBanner, updateBanner } from '@/api/banner'
 
 export default {
   data() {
@@ -117,6 +133,8 @@ export default {
       bannerList: ['无幻灯片，请添加', '无幻灯片，请添加', '无幻灯片，请添加'],
       bannerCount: 5,
       bannerIndex: 0,
+      // 用于控制bannerIndex是否改变
+      bannerIndexLocked: false,
       productId: 0,
       productName: '',
       dialogVisible: false,
@@ -129,10 +147,30 @@ export default {
     }
   },
 
+  computed: {
+    productDescription: function() {
+      if (this.checkIsBanner()) {
+        const banner = this.getBannerByIndex()
+        return `幻灯片ID: ${banner.bannerId} | 关联产品ID: ${banner.productId}`
+      }
+      // this.$router.push(`/product/productInfo/${productId}`)
+    },
+    associated: function() {
+      if (this.checkIsBanner()) {
+        const banner = this.getBannerByIndex()
+        return banner.productId
+      }
+      return false
+    }
+  },
+
   methods: {
     onChange(index) {
       // console.log(index)
-      this.bannerIndex = index
+      // 没有锁就更换index
+      if (!this.bannerIndexLocked) {
+        this.bannerIndex = index
+      }
       const banner = this.bannerList[index]
       if (banner && banner.productId) {
         this.productId = banner.productId
@@ -143,15 +181,32 @@ export default {
       }
     },
 
+    toProduct(productId) {
+      productId && this.$router.push(`/product/productInfo/${productId}`)
+    },
+
     bannerEdit() {
       this.dialogVisible = true
+      // 锁着index
+      this.bannerIndexLocked = true
     },
 
     bannerDelete() {
 
     },
 
+    checkIsBanner() {
+      const banner = this.getBannerByIndex()
+      const isObj = Object.prototype.toString.call(banner) === '[Object Object]'
+      return typeof banner === 'object'
+    },
+
+    getBannerByIndex() {
+      return this.bannerList[this.bannerIndex]
+    },
+
     uploadClick() {
+      this.fileList = []
       this.dialogVisible = false
       this.uploadVisible = true
     },
@@ -182,9 +237,18 @@ export default {
       console.log(file)
     },
 
+    // 上传成功
     handleAvatarSuccess(res, file) {
       // ??
       // this.imageUrl = URL.createObjectURL(file.raw)
+      console.log(res)
+      this.bannerImageFlag = true
+      const imgUrl = res.data.fileDownloadUrl
+      this.judgeBanner(imgUrl)
+      this.uploadVisible = false
+    },
+    handleAvatarError(err, file, fileList) {
+      this.bannerImageFlag = false
     },
     beforeAvatarUpload(file) {
       const isJPGorPNG = file.type === 'image/jpeg' || file.type === 'image/png'
@@ -227,30 +291,75 @@ export default {
       this.bannerImageFlag = false
     },
 
+    // 添加图片链接
     addBannerFromLink() {
-      if (this.bannerImageFlag) {
-        // api
+      this.judgeBanner(this.textarea)
+    },
 
+    judgeBanner(imgUrl) {
+      const banner = this.bannerList[this.bannerIndex]
+      const isObj = Object.prototype.toString.call(banner) === '[Object Object]'
+      if (typeof banner === 'object') {
+        // 修改幻灯片
+        this.setBanner(banner, imgUrl)
+      } else {
+        // 添加幻灯片1
+        this.setBanner(null, imgUrl)
+      }
+    },
+
+    setBanner(banner, imgUrl) {
+      if (this.bannerImageFlag) {
+        if (banner) {
+          // api
+          banner.image = imgUrl
+          updateBanner(banner)
+            .then(data => {
+              this.bannerList.splice(this.bannerIndex, 1, data)
+              // 解锁index
+              this.bannerIndexLocked = false
+            })
+            .finally(() => {
+              this.linkVisible = false
+            })
+        } else {
+          // 添加
+          addBanner({image: imgUrl})
+            .then(data => {
+              this.bannerList.splice(this.bannerIndex, 1, data)
+              // 解锁index
+              this.bannerIndexLocked = false
+            })
+            .finally(() => {
+              this.linkVisible = false
+            })
+        }
       } else {
         this.$message.error('图像加载失败，请重试!')
       }
-    }
+    },
+
   },
   created() {
-    const banners = this.ajaxGetBanner()
-    const length = this.bannerCount - banners.length
-    // 幻灯片数量不足用文字代替图片
-    // console.log(length)
-    for (let i = 0; i < length; i++) {
-      banners.push('无幻灯片，请添加')
-    }
-    this.bannerList = banners
+    getBanners()
+      .then(data => {
+        const banners = data
+        const length = this.bannerCount - banners.length
+        // 幻灯片数量不足用文字代替图片
+        // console.log(length)
+        for (let i = 0; i < length; i++) {
+          banners.push('无幻灯片，请添加')
+        }
+        this.bannerList = banners
 
-    const banner = this.bannerList[0]
-    if (banner && banner.productId) {
-      this.productId = banner.productId
-      this.productName = banner.productName
-    }
+        const banner = this.bannerList[0]
+        if (banner && banner.productId) {
+          this.productId = banner.productId
+          this.productName = banner.productName
+        }
+
+      })
+
 
     // getBook()
     //   .then(res => {

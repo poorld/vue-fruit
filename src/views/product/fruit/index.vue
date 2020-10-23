@@ -118,7 +118,7 @@
               <svg-icon icon-class="fruit_choiceness" />设为每日精选
             </el-button>
 
-            <el-button type="warning" size="mini">
+            <el-button type="warning" size="mini" @click="showBannerDialog(props.row)">
               <svg-icon icon-class="fruit_choiceness" />关联幻灯片
             </el-button>
 
@@ -196,14 +196,19 @@
       layout="prev, pager, next"
       :total="1000">
     </el-pagination>
+
+    <!-- 幻灯片 -->
+    <set-banner ref="bannerDialog" @onAssociated="onAssociated"/>
   </div>
 </template>
 
 <script>
+import SetBanner from './components/SetBanner/index.vue'
+
 import { getList } from '@/api/table'
-const cityOptions = ['上海1', '北京2', '广州3', '深圳4','上海5', '北京6', '广州7', '深圳8']
 import { getCategory } from '@/api/category'
 import { getProducts, getProductById, getProductByCategory, getProductByQuery } from '@/api/product'
+import { updateBanner } from '@/api/banner'
 
 export default {
   filters: {
@@ -234,8 +239,10 @@ export default {
       checkAll: false,
       checkedCategory: [],
       categorys: [],
-      isIndeterminate: true
+      isIndeterminate: true,
 
+      // 关联产品
+      associatedProduct: {}
     }
   },
   created() {
@@ -258,6 +265,11 @@ export default {
           this.list = data
           this.listLoading = false
         })
+    },
+
+    showBannerDialog(product) {
+      this.associatedProduct = product
+      this.$refs.bannerDialog.showDialog()
     },
 
     handleCheckAllChange(val) {
@@ -327,9 +339,42 @@ export default {
           this.listLoading = false
         })
 
+    },
+
+    // 关联幻灯片
+    onAssociated(banner) {
+      const product = this.associatedProduct
+      this.$confirm(`您要与产品[${product.name}]关联, 是否继续?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          const bannerForm = {
+            bannerId: banner.bannerId,
+            productId: product.productId
+          }
+          return updateBanner(bannerForm)
+
+        }).then(data => {
+          this.$refs.bannerDialog.initData()
+          this.$message({
+            type: 'success',
+            message: '关联成功!'
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消关联'
+          })
+        })
+
     }
 
   },
+
+  components: {
+    SetBanner
+  }
 
 }
 </script>

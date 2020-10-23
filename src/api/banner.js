@@ -1,28 +1,26 @@
 import {apiFruitService} from '@/utils/request'
 
-export function getBook(data) {
+export function getBanners(data) {
   return apiFruitService({
-    url: '/fruit/book',
+    url: '/fruit/banner/all',
     method: 'get',
     data
   })
 }
 
-export function addBook(data) {
+export function addBanner(data) {
   return apiFruitService({
-    url: '/fruit/book',
+    url: '/fruit/banner',
     method: 'post',
     data,
-    // headers: {
-    //   'Content-Type': 'application/json'
-    // }
   })
 }
 
-export function uploadImage(data) {
+export function updateBanner(data) {
   return apiFruitService({
-    url: '/file/upload',
-    method: 'post',
-    data
+    url: '/fruit/banner',
+    method: 'put',
+    data,
   })
 }
+

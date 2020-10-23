@@ -803,11 +803,8 @@ export default {
         })
       })
 
-    },
-
-    setProduct(_this, data) {
-
     }
+
   },
 
   created() {
