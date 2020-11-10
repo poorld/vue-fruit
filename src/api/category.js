@@ -1,4 +1,3 @@
-import { from } from "core-js/fn/array";
 import {apiFruitService} from '@/utils/request'
 
 export function getCategory(data) {
