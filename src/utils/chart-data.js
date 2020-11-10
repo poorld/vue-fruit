@@ -57,7 +57,7 @@ var chartConfig = {
     }],
     yAxis: [{
       type: 'value',
-      name: '(%)',
+      name: '(元)',
       axisTick: {
         show: false
       },
@@ -186,41 +186,70 @@ var chartConfig = {
 
 var colorConfig = {
   colors: [
-    {
-      color: 'rgb(137,189,27)',
-      borderColor: 'rgba(137,189,2,0.27)'
-    },
-    {
-      color: 'rgb(0,136,212)',
-      borderColor: 'rgba(0,136,212,0.2)',
-    },
-    {
-      color: 'rgb(219,50,51)',
-      borderColor: 'rgba(219,50,51,0.2)',
-    },
-    {
-      color: 'rgb(255,219,76)',
-      borderColor: 'rgba(255,219,76,0.2)',
-    },
-    {
-      color: 'rgb(255,0,255)',
-      borderColor: 'rgba(255,0,255,0.2)',
-    },
-    {
-      color: 'rgb(123,104,238)',
-      borderColor: 'rgba(123,104,238,0.2)',
-    },
-    {
-      color: 'rgb(30,144,255)',
-      borderColor: 'rgba(30,144,255,0.2)',
-    },
-    {
-      color: 'rgb(218,165,32)',
-      borderColor: 'rgba(218,165,32,0.2)',
-    }
+    'rgb(137,189,27)',
+    'rgb(0,136,212)',
+    'rgb(219,50,51)',
+    'rgb(255,219,76)',
+    'rgb(30,144,255)',
+    'rgb(255,0,255)',
+    'rgb(123,104,238)',
+    'rgb(218,165,32)',
   ]
 }
 
+// 'rgba(218,165,32,0.2)'
+function getRGBA(rgba) {
+  return rgba.replace('rgba', '').split(',')
+}
 
+// 'rgb(137,189,27)'
+function getStyleColor(rgb) {
+  const rgbs = rgb.replace('rgb', '').replace('(', '').replace(')', '').split(',')
+  let colors = []
+  colors.push(`rgba(${rgbs[0]},${rgbs[1]},${rgbs[2]},0.3)`)
+  colors.push(`rgba(${rgbs[0]},${rgbs[1]},${rgbs[2]},0)`)
+  colors.push(`rgb(${rgbs[0]},${rgbs[1]},${rgbs[2]})`)
+  colors.push(`rgba(${rgbs[0]},${rgbs[1]},${rgbs[2]},0.2)`)
+  return colors
+}
 
-export { colorConfig, chartConfig }
+function getSeries(color, data) {
+  let styleColor = getStyleColor(color)
+  return {
+    name: data.category,
+    type: 'line',
+    smooth: true,
+    symbol: 'circle',
+    symbolSize: 5,
+    showSymbol: false,
+    lineStyle: {
+      normal: {
+        width: 1
+      }
+    },
+    areaStyle: {
+      normal: {
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+          offset: 0,
+          color: styleColor[0]
+        }, {
+          offset: 0.8,
+          color: styleColor[1]
+        }], false),
+        shadowColor: 'rgba(0, 0, 0, 0.1)',
+        shadowBlur: 10
+      }
+    },
+    itemStyle: {
+      normal: {
+        color: styleColor[2],
+        borderColor: styleColor[3],
+        borderWidth: 12
+
+      }
+    },
+    data: data.sales
+  }
+}
+
+export { colorConfig, chartConfig, getSeries }

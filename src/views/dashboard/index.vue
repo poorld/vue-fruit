@@ -1,7 +1,7 @@
 
 <template>
   <div class="chart-container">
-    <chart height="100%" width="100%" />
+    <chart :options="options" height="100%" width="100%" />
   </div>
 </template>
 
@@ -9,12 +9,17 @@
   import { mapGetters } from 'vuex'
   import Chart from './Charts/LineMarker.vue'
   import { getEveryDayToCurrent } from '@/utils/my-date'
-  import { colorConfig, chartConfig } from '@/utils/chart-data'
+  import { colorConfig, chartConfig, getSeries } from '@/utils/chart-data'
   import { getCategory } from '@/api/category'
   import { getOrderSales } from '@/api/order'
 
   export default {
     name: 'Dashboard',
+    data() {
+      return {
+        options: {}
+      }
+    },
     computed: {
       ...mapGetters([
         'name'
@@ -84,13 +89,14 @@
           const data = chartDatas[index]
           const colorLen = colorConfig.colors.length
           if(index < colorLen) {
-            const colorObj = colorConfig.colors[index]
-            seriesArray.push()
+            const color = colorConfig.colors[index]
+            seriesArray.push(getSeries(color, data))
           }
 
-
         }
+        options.series = seriesArray
         console.log(options)
+        this.options = options
       },
 
       getsalesByDay(salesArray, day) {
