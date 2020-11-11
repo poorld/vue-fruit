@@ -51,6 +51,8 @@
         }
         // 存放所有分类的月销售额
         let chartDatas = []
+        // 分类标题
+        let titles = []
         for (let j = 0; j < salesArray.length; j++) {
           for (let index = 0; index < days.length; index++) {
             const day = days[index]
@@ -59,6 +61,7 @@
             if (category) {
               // 设置分类名称
               categorySales.category = category.categoryName
+              titles.push(category.categoryName)
               // 获取每一天的销售额
               const sales = category.sales.find(sales => sales.day === day)
               // console.log(sales)
@@ -95,6 +98,7 @@
 
         }
         options.series = seriesArray
+        options.legend.data = titles
         console.log(options)
         this.options = options
       },
@@ -120,6 +124,6 @@
 .chart-container{
   position: relative;
   width: 100%;
-  height: calc(100vh - 84px);
+  height: calc(100vh - 50px);
 }
 </style>
