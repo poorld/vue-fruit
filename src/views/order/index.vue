@@ -4,6 +4,9 @@
       :data="tableData"
       style="width: 100%"
       :row-class-name="tableRowClassName"
+      @expand-change="expandSelect"
+      :row-key='getRowKeys'
+      :expand-row-keys="expands"
       >
       <el-table-column
         prop="orderNum"
@@ -28,7 +31,7 @@
         :filter-method="filterTag">
         <template slot-scope="scope">
           <el-tag
-            :type="scope.row.status == 1 ? 'primary' : 'success'"
+            :type="scope.row.status == 0 ? 'primary' : 'success'"
             disable-transitions>{{ scope.row.status | activeFilters }}</el-tag>
         </template>
       </el-table-column>
@@ -77,16 +80,19 @@
                 </div>
               </div>
             </div>
-            <div class="price">
+            <div class="price" v-if="props.row.status != 0">
               付款金额：{{ props.row.totalPrice }}元
             </div>
-            <div>
+            <div v-if="props.row.status != 0">
               <p>订单编号：{{ props.row.orderNum }}</p>
               <p>联系人：{{ props.row.contactName }}</p>
               <p>联系电话：{{ props.row.contactMobile }}</p>
               <p>收货地址：{{ props.row.contactAddress }}</p>
               <p>用户留言：{{ props.row.message }}</p>
             </div>
+            <el-button v-if="props.row.status > 0 && props.row.status < 5" type="danger" size="mini" style="float: right;" @click="cancleOrderClick(props.row.orderNum)">
+              取消订单
+            </el-button>
           </el-form>
         </template>
       </el-table-column>
@@ -146,12 +152,13 @@
 </template>
 
 <script>
-import { getOrders } from '@/api/order'
+import { getOrders, cancelOrder } from '@/api/order'
 import { confirm } from '@/utils/dialog'
 export default {
   data() {
     return {
       tableData: [],
+      expands: [],
       dialogFormVisible: false,
       form: {
         // 满足条件
@@ -209,6 +216,7 @@ export default {
       return discounts + unit
     }
   },
+
 
   methods: {
     initData() {
@@ -299,7 +307,27 @@ export default {
           this.$router.go(0)
         })
 
-    }
+    },
+    cancleOrderClick(orderNum) {
+      cancelOrder(orderNum).then(res => {
+        this.initData()
+      })
+    },
+    // 折叠面板每次只能展开一行
+    expandSelect (row, expandedRows) {
+      var that = this
+      if (expandedRows.length) {
+        that.expands = []
+        if (row) {
+          that.expands.push(row.orderNum)
+        }
+      } else {
+        that.expands = []
+      }
+    },
+    getRowKeys(row) {
+      return row.orderNum
+    },
 
   },
 

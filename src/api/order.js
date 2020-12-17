@@ -15,3 +15,11 @@ export function getOrders() {
     method: 'get'
   })
 }
+
+// 取消订单
+export function cancelOrder(orderNum) {
+  return apiFruitService({
+    url: `/fruit/order/payment/cancel/${orderNum}`,
+    method: 'put'
+  })
+}

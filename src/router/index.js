@@ -137,6 +137,18 @@ export const constantRoutes = [
   },
 
   {
+    path: '/user',
+    component: Layout,
+    redirect: '/user/index',
+    children: [{
+      path: 'user',
+      name: 'user',
+      component: () => import('@/views/user/index'),
+      meta: { title: '用户管理', icon: 'dashboard' }
+    }]
+  },
+
+  {
     path: '/nested',
     component: Layout,
     redirect: '/nested/menu1',
