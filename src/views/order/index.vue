@@ -50,12 +50,12 @@
               @click="handleEdit(scope.$index, scope.row)">
             </el-button>
 
-            <el-button
+            <!-- <el-button
               type="danger"
               icon="el-icon-delete"
               size="mini"
               @click="handleDelete(scope.$index, scope.row)">
-            </el-button>
+            </el-button> -->
           </el-button-group>
         </template>
       </el-table-column>
@@ -90,6 +90,9 @@
               <p>收货地址：{{ props.row.contactAddress }}</p>
               <p>用户留言：{{ props.row.message }}</p>
             </div>
+            <el-button v-if="props.row.status === 2" type="success" size="mini" style="float: right;" @click="cancleOrderClick(props.row.orderNum)">
+              发货
+            </el-button>
             <el-button v-if="props.row.status > 0 && props.row.status < 5" type="danger" size="mini" style="float: right;" @click="cancleOrderClick(props.row.orderNum)">
               取消订单
             </el-button>
@@ -137,7 +140,7 @@
 </template>
 
 <script>
-import { getOrders, cancelOrder } from '@/api/order'
+import { getOrders, cancelOrder, updateContact } from '@/api/order'
 import { confirm } from '@/utils/dialog'
 export default {
   data() {
@@ -154,7 +157,6 @@ export default {
       },
       options: [],
       formLabelWidth: '120px',
-      update: false
     }
   },
 
@@ -230,17 +232,12 @@ export default {
       // const cat = this.getDiscountsCatByFlag(this.options, this.form.type)
       // this.form.discountsCategory.discountsCategoryId = cat.discountsCategoryId
       // console.log(this.form)
-      if (this.update) {
-        updateDiscounts(this.form)
-          .then(data => {
-            this.initData()
-          })
-      } else {
-        addDiscounts(this.form)
-          .then(data => {
-            this.initData()
-          })
-      }
+      updateContact(this.form)
+        .then(data => {
+          this.$message.success('修改成功')
+          this.initData()
+        })
+
       this.dialogFormVisible = false
     },
 

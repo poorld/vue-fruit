@@ -71,6 +71,12 @@ export const constantRoutes = [
         meta: { title: '商品', icon: 'table' }
       },
       {
+        path: 'inventory',
+        name: '库存',
+        component: () => import('@/views/product/inventory/index'),
+        meta: { title: '库存', icon: 'table' }
+      },
+      {
         path: 'category',
         name: '分类',
         component: () => import('@/views/product/category/index'),

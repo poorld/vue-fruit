@@ -29,3 +29,12 @@ export function getAllUser() {
     method: 'get'
   })
 }
+
+export function updateUser(user) {
+  return apiFruitService({
+    url: '/fruit/user',
+    method: 'put',
+    data: user
+  })
+}
+

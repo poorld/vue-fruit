@@ -23,3 +23,12 @@ export function cancelOrder(orderNum) {
     method: 'put'
   })
 }
+
+// 跟新联系人
+export function updateContact(contact) {
+  return apiFruitService({
+    url: `/fruit/order`,
+    method: 'put',
+    data: contact
+  })
+}
