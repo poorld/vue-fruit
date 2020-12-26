@@ -90,7 +90,7 @@
               <p>收货地址：{{ props.row.contactAddress }}</p>
               <p>用户留言：{{ props.row.message }}</p>
             </div>
-            <el-button v-if="props.row.status === 2" type="success" size="mini" style="float: right;" @click="cancleOrderClick(props.row.orderNum)">
+            <el-button v-if="props.row.status === 2" type="success" size="mini" style="float: right;" @click="deliveryClick(props.row.orderNum)">
               发货
             </el-button>
             <el-button v-if="props.row.status > 0 && props.row.status < 5" type="danger" size="mini" style="float: right;" @click="cancleOrderClick(props.row.orderNum)">
@@ -140,7 +140,7 @@
 </template>
 
 <script>
-import { getOrders, cancelOrder, updateContact } from '@/api/order'
+import { getOrders, cancelOrder, updateContact, delivery } from '@/api/order'
 import { confirm } from '@/utils/dialog'
 export default {
   data() {
@@ -285,8 +285,20 @@ export default {
         })
 
     },
+    /**
+     * 取消订单
+     */
     cancleOrderClick(orderNum) {
       cancelOrder(orderNum).then(res => {
+        this.initData()
+      })
+    },
+    /**
+     * 发货
+     */
+    deliveryClick(orderNum) {
+      delivery(orderNum).then(data => {
+        this.$message.success('发货成功')
         this.initData()
       })
     },

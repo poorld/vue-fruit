@@ -32,3 +32,11 @@ export function updateContact(contact) {
     data: contact
   })
 }
+
+// 发货
+export function delivery(orderNum) {
+  return apiFruitService({
+    url: `fruit/order/delivery/${orderNum}`,
+    method: 'put'
+  })
+}
