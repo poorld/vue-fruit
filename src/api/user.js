@@ -1,4 +1,4 @@
-import {mockService, apiService} from '@/utils/request'
+import {mockService, apiService, apiFruitService} from '@/utils/request'
 
 export function login(data) {
   return mockService({
@@ -20,5 +20,12 @@ export function logout() {
   return mockService({
     url: '/vue-admin-template/user/logout',
     method: 'post'
+  })
+}
+
+export function getAllUser() {
+  return apiFruitService({
+    url: '/fruit/user',
+    method: 'get'
   })
 }

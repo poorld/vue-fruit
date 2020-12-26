@@ -218,28 +218,28 @@ function getSeries(color, data) {
   return {
     name: data.category,
     type: 'line',
-    smooth: true,
-    symbol: 'circle',
+    // smooth: true,
+    // symbol: 'circle',
     symbolSize: 5,
     showSymbol: false,
     lineStyle: {
       normal: {
-        width: 1
+        width: 3
       }
     },
-    areaStyle: {
-      normal: {
-        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-          offset: 0,
-          color: styleColor[0]
-        }, {
-          offset: 0.8,
-          color: styleColor[1]
-        }], false),
-        shadowColor: 'rgba(0, 0, 0, 0.1)',
-        shadowBlur: 10
-      }
-    },
+    // areaStyle: {
+    //   normal: {
+    //     color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+    //       offset: 0,
+    //       color: styleColor[0]
+    //     }, {
+    //       offset: 0.8,
+    //       color: styleColor[1]
+    //     }], false),
+    //     shadowColor: 'rgba(0, 0, 0, 0.1)',
+    //     shadowBlur: 10
+    //   }
+    // },
     itemStyle: {
       normal: {
         color: styleColor[2],

@@ -448,7 +448,9 @@ export default {
       // this.form.discounts = JSON.parse(JSON.stringify(dis))
       // this.form.tags = JSON.parse(JSON.stringify(tags))
       console.log(this.form)
-      addProduct(this.form)
+      addProduct(this.form).then(data => {
+        this.$message.success("添加成功");
+      })
     },
 
     initData() {

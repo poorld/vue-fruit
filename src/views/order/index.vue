@@ -99,48 +99,33 @@
     </el-table>
 
     <el-dialog
-      title="优惠活动"
+      title="订单"
       :visible.sync="dialogFormVisible"
       :before-close="handleClose">
 
       <el-form :model="form" ref="form">
 
-        <el-form-item label="优惠类型" :label-width="formLabelWidth" prop="discountsCategory.discountsFlag">
-          <el-select v-model="form.discountsCategory.discountsCategoryId" placeholder="请选择优惠类型">
-            <el-option
-              v-for="item in options"
-              :key="item.discountsFlag"
-              :label="item.discountsType"
-              :value="item.discountsCategoryId">
-            </el-option>
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="满足条件" :label-width="formLabelWidth" prop="conditions">
-          <el-input type="number" placeholder="请输入内容" v-model="form.conditions">
-            <template slot="append">元</template>
+        <el-form-item label="订单编号" :label-width="formLabelWidth" prop="orderNum">
+          <el-input disabled type="text" placeholder="请输入内容" v-model="form.orderNum">
           </el-input>
         </el-form-item>
 
-        <el-form-item label="满足条件说明" :label-width="formLabelWidth" prop="conditionsExplain">
-          <el-input type="text" placeholder="请输入内容" v-model="form.conditionsExplain">
+        <el-form-item label="联系人" :label-width="formLabelWidth" prop="contactName">
+          <el-input  placeholder="请输入内容" v-model="form.contactName">
           </el-input>
         </el-form-item>
 
-        <el-form-item label="享受优惠" :label-width="formLabelWidth" prop="discounts">
-          <el-input type="number" placeholder="请输入内容" v-model="form.discounts">
-            <template slot="append">{{ form.discountsCategory.discountsFlag | activeFilters }}</template>
-          </el-input>
+        <el-form-item label="联系电话" :label-width="formLabelWidth" prop="contactMobile">
+          <el-input type="number" v-model="form.contactMobile"></el-input>
         </el-form-item>
 
-        <el-form-item label="仅限会员" :label-width="formLabelWidth" prop="members">
-          <el-checkbox v-model="form.members"></el-checkbox>
+        <el-form-item label="收货地址" :label-width="formLabelWidth" prop="contactAddress">
+          <el-input v-model="form.contactAddress"></el-input>
         </el-form-item>
 
-        <el-form-item label="优惠说明" :label-width="formLabelWidth" prop="explain">
-          <el-input v-model="form.explain"></el-input>
+        <el-form-item label="用户留言" :label-width="formLabelWidth" prop="message">
+          <el-input v-model="form.message"></el-input>
         </el-form-item>
-
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -161,17 +146,11 @@ export default {
       expands: [],
       dialogFormVisible: false,
       form: {
-        // 满足条件
-        conditions: '',
-        // 享受优惠
-        discounts: '',
-        members: false,
-        conditionsExplain: '',
-        explain: '',
-        discountsCategory: {
-          discountsCategoryId: '',
-          discountsFlag: ''
-        }
+        orderNum: '',
+        contactName: '',
+        contactMobile: '',
+        contactAddress: '',
+        message: ''
       },
       options: [],
       formLabelWidth: '120px',
@@ -266,6 +245,7 @@ export default {
     },
 
     handleEdit(index, row) {
+      console.log(row);
       this.$nextTick(() => {
         if (this.$refs['form']) {
           this.$refs['form'].resetFields()
