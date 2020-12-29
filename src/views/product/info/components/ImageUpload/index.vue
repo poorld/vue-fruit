@@ -25,7 +25,7 @@
         <!-- :http-request="uploadImg" -->
         <el-upload
           class="upload-demo"
-          action="http://localhost:9000/api/app/file/upload"
+          action="http://192.168.2.25:9000/api/app/file/upload"
           name="file"
           :on-preview="handlePreview"
           :on-remove="handleRemove"

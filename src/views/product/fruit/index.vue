@@ -44,14 +44,13 @@
 
       <el-table-column type="expand">
         <template slot-scope="props">
-          <div class="status">
+          <!-- <div class="status">
             <span>上线板块</span>
             <el-tag>新品上市</el-tag>
             <el-tag type="success">热销水果</el-tag>
-            <!-- <el-tag type="info">标签三</el-tag> -->
             <el-tag type="warning">限时抢购</el-tag>
             <el-tag type="danger">每日精选</el-tag>
-          </div>
+          </div> -->
 
           <el-form label-position="left" inline class="demo-table-expand">
 
@@ -114,7 +113,7 @@
           </el-form>
 
           <el-row class="fruit-setting">
-            <el-button type="info" size="mini">
+            <!-- <el-button type="info" size="mini">
               <svg-icon icon-class="fruit_hot" />设为热销水果
             </el-button>
 
@@ -124,7 +123,7 @@
 
             <el-button type="success" size="mini">
               <svg-icon icon-class="fruit_choiceness" />设为每日精选
-            </el-button>
+            </el-button> -->
 
             <el-button type="warning" size="mini" @click="showBannerDialog(props.row)">
               <svg-icon icon-class="fruit_choiceness" />关联幻灯片

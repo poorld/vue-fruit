@@ -27,7 +27,8 @@
         label="订单状态"
         :filters="[{text: '等待支付', value: 1}, { text: '已支付', value: 2 },
                   {text: '配送中', value: 3}, { text: '配送完成', value: 4 },
-                  {text: '订单支付超时', value: 5}, {text: '订单取消', value: 6}]"
+                  {text: '订单支付超时', value: 5}, {text: '订单取消', value: 6},
+                  {text: '交易完成', value: 7}]"
         :filter-method="filterTag">
         <template slot-scope="scope">
           <el-tag
@@ -176,6 +177,8 @@ export default {
         return '订单支付超时'
       }else if (value === 6) {
         return '订单取消'
+      }else if (value === 7) {
+        return '订单完成'
       }
       return '嗯嗯'
     },

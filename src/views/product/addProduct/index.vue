@@ -145,9 +145,10 @@
       <div class="text item">
         <span class="item-title">商品详情（用于展示幻灯片，最多上传6张）</span>
         <el-upload
-          action="http://localhost:9000/api/app/file/upload"
+          action="http://192.168.2.25:9000/api/app/file/upload"
           list-type="picture-card"
           :limit="6"
+          multiple
           :on-success="handleBannerSuccess"
           :on-preview="handleBannerPreview"
           :on-remove="handleBannerRemove">
@@ -163,10 +164,11 @@
         <span class="item-title">水果介绍（用于水果详情）</span>
         <el-upload
           class="upload-demo"
-          action="http://localhost:9000/api/app/file/upload"
+          action="http://192.168.2.25:9000/api/app/file/upload"
           :on-success="handleInfoSuccess"
           :on-remove="handleInfoRemove"
           :file-list="fileList"
+          multiple
           list-type="picture"
         >
           <el-button
